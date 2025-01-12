@@ -11,13 +11,18 @@
   - [[#general-keybindings][General Keybindings]]
 - [[#fonts][Fonts]]
   - [[#setting-the-font-face][Setting The Font Face]]
+  - [[#zooming-inout][Zooming In/Out]]
+  - [[#enable-ligature-of-fonts][Enable ligature of fonts.]]
 - [[#graphical-user-interface-tweaks][GRAPHICAL USER INTERFACE TWEAKS]]
   - [[#disable-bars][Disable bars]]
-  - [[#enable-line-numbers][Enable line numbers]]
+  - [[#enable-relative-line-numbers-and-line-wrapping][Enable relative line numbers and line wrapping]]
 - [[#org-mode][Org mode]]
   - [[#enable-table-of-contents][Enable Table of Contents]]
   - [[#enable-org-bullets][Enable Org Bullets]]
+  - [[#disable-electric-indent][Disable Electric Indent]]
   - [[#enable-org-tempo][Enable Org tempo]]
+- [[#reload-emacs][Reload Emacs]]
+- [[#sudo-edit][SUDO EDIT]]
 - [[#which-key][Which-Key]]
 
 * IMPORTANT PROGRAMS TO LOAD FIRST
@@ -28,33 +33,33 @@
   (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
   (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
   (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-				:ref nil :depth 1
-				:files (:defaults "elpaca-test.el" (:exclude "extensions"))
-				:build (:not elpaca--activate-package)))
+                                :ref nil :depth 1
+                                :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+                                :build (:not elpaca--activate-package)))
   (let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
-	 (build (expand-file-name "elpaca/" elpaca-builds-directory))
-	 (order (cdr elpaca-order))
-	 (default-directory repo))
+         (build (expand-file-name "elpaca/" elpaca-builds-directory))
+         (order (cdr elpaca-order))
+         (default-directory repo))
     (add-to-list 'load-path (if (file-exists-p build) build repo))
     (unless (file-exists-p repo)
       (make-directory repo t)
       (when (< emacs-major-version 28) (require 'subr-x))
       (condition-case-unless-debug err
-	  (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-		    ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
-						    ,@(when-let* ((depth (plist-get order :depth)))
-							(list (format "--depth=%d" depth) "--no-single-branch"))
-						    ,(plist-get order :repo) ,repo))))
-		    ((zerop (call-process "git" nil buffer t "checkout"
-					  (or (plist-get order :ref) "--"))))
-		    (emacs (concat invocation-directory invocation-name))
-		    ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-					  "--eval" "(byte-recompile-directory \".\" 0 'force)")))
-		    ((require 'elpaca))
-		    ((elpaca-generate-autoloads "elpaca" repo)))
-	      (progn (message "%s" (buffer-string)) (kill-buffer buffer))
-	    (error "%s" (with-current-buffer buffer (buffer-string))))
-	((error) (warn "%s" err) (delete-directory repo 'recursive))))
+          (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+                    ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+                                                    ,@(when-let* ((depth (plist-get order :depth)))
+                                                        (list (format "--depth=%d" depth) "--no-single-branch"))
+                                                    ,(plist-get order :repo) ,repo))))
+                    ((zerop (call-process "git" nil buffer t "checkout"
+                                          (or (plist-get order :ref) "--"))))
+                    (emacs (concat invocation-directory invocation-name))
+                    ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                          "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+                    ((require 'elpaca))
+                    ((elpaca-generate-autoloads "elpaca" repo)))
+              (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+            (error "%s" (with-current-buffer buffer (buffer-string))))
+        ((error) (warn "%s" err) (delete-directory repo 'recursive))))
     (unless (require 'elpaca-autoloads nil t)
       (require 'elpaca)
       (elpaca-generate-autoloads "elpaca" repo)
@@ -106,26 +111,51 @@
 ** General Keybindings
 
 #+begin_src emacs-lisp
-  (use-package general
-  :config
-  (general-evil-setup)
-  ;; setup 'SPC' as the global leader key
-  (general-create-definer dobin/leader-keys
-  :states '(normal insert visual emacs)
-  :keymaps 'override
-  :prefix "SPC" ;; set leader key here
-  :global-prefix "M-SPC") ;; access leader in insert mode 
+   (use-package general
+     :config
+     (general-evil-setup)
+     ;; setup 'SPC' as the global leader key
+     (general-create-definer dobin/leader-keys
+         :states '(normal insert visual emacs)
+         :keymaps 'override
+         :prefix "SPC" ;; set leader key here
+         :global-prefix "M-SPC") ;; access leader in insert mode 
 
-  (dobin/leader-keys
-  "b" '(:ignore t :wk "Buffer")
-  "b b" '(switch-to-buffer :wk "Switch buffer")
-  "b k" '(kill-this-buffer :wk "Kill this buffer")
-  "b n" '(next-buffer :wk "Next buffer")
-  "b p" '(previous-buffer :wk "Previous buffer")
-  "b r" '(revert-buffer :wk "Reload buffer"))
+     (dobin/leader-keys
+     "f f" '(find-file :wk "Find file")
+     "f c" '((lambda () (interactive) (find-file "~/.config/emacs/config.org")) :wk "Edit Emacs config")
+     "c c" '(comment-line :wk "Comment lines"))
 
+     (dobin/leader-keys
+     "b" '(:ignore t :wk "Buffer")
+     "b b" '(switch-to-buffer :wk "Switch buffer")
+     "b i" '(ibuffer :wk "Ibuffer")
+     "b k" '(kill-this-buffer :wk "Kill this buffer")
+     "b n" '(next-buffer :wk "Next buffer")
+     "b p" '(previous-buffer :wk "Previous buffer")
+     "b r" '(revert-buffer :wk "Reload buffer"))
+
+     (dobin/leader-keys
+     "e" '(:ignore t :wk "Evaluate")
+     "e b" '(eval-buffer :wk "Evaluate elisp in buffer")
+     "e d" '(eval-defun :wk "Evaluate defun containing or after point")
+     "e e" '(eval-expression :wk "Evaluate and elisp expression")
+     "e l" '(eval-last-sexp :wk "Evaluate elisp expression before point")
+     "e r" '(eval-region :wk "Evaluate elisp in region"))
+
+     (dobin/leader-keys
+     "h" '(:ignore t :wk "Help")
+     "h f" '(describe-function :wk "Describe function")
+     "h v" '(describe-variable :wk "Describe variable")
+     ;; "h r r" '((lambda () (interactive) (load-file "~/.config/emacs/init.el")) :wk "Reload Emacs config"))
+     "h r r" '(reload-init-file :wk "Reload Emacs config"))
+
+    (dobin/leader-keys
+  "t" '(:ignore t :wk "Toggle")
+  "t l" '(display-line-numbers-mode :wk "Toggle line numbers")
+  "t t" '(visual-line-mode :wk "Toggle line wrapping"))
   )
-#+end_src
+ #+end_src
 
 * Fonts
 Definig fonts to use in Emacs
@@ -158,6 +188,37 @@ Definig fonts to use in Emacs
   ;; (setq-default line-spacing 0.12)
 #+end_src
 
+** Zooming In/Out
+줌인을 간소화하기 위해 키맵을 추가한다. "C-x C-="에서 "C-x"만 없애는 느낌.
+Make zooming in/out easier. E.g. From "C-x C-=" removing "C-x".
+
+#+begin_src emacs-lisp
+  (global-set-key (kbd "C-=") 'text-scale-increase)
+  (global-set-key (kbd "C--") 'text-scale-decrease)
+  (global-set-key (kbd "C-<wheel-up>") 'text-scale-increase)
+  (global-set-key (kbd "C-<wheel-down>") 'text-scale-decrease)
+#+end_src
+
+** Enable ligature of fonts.
+Enable ligature to all major modes
+
+#+begin_src emacs-lisp
+  (defvar ligatures-JetBrainsMono
+    '("--" "---" "==" "===" "!=" "!==" "=!=" "=:=" "=/=" "<=" ">=" "&&" "&&&" "&=" "++" "+++"
+      "***" ";;" "!!" "??" "?:" "?." "?=" "<:" ":<" ":>" ">:" "<>" "<<<" ">>>" "<<" ">>" "||" "-|"
+      "_|_" "|-" "||-" "|=" "||=" "##" "###" "####" "#{" "#[" "]#" "#(" "#?" "#_" "#_(" "#:"
+      "#!" "#=" "^=" "<$>" "<$" "$>" "<+>" "<+ +>" "<*>" "<* *>" "</" "</>" "/>" "<!--"
+      "<#--" "-->" "->" "->>" "<<-" "<-" "<=<" "=<<" "<<=" "<==" "<=>" "<==>" "==>" "=>"
+      "=>>" ">=>" ">>=" ">>-" ">-" ">--" "-<" "-<<" ">->" "<-<" "<-|" "<=|" "|=>" "|->" "<-"
+      "<~~" "<~" "<~>" "~~" "~~>" "~>" "~-" "-~" "~@" "[||]" "|]" "[|" "|}" "{|" "[<" ">]"
+      "|>" "<|" "||>" "<||" "|||>" "|||>" "<|>" "..." ".." ".=" ".-" "..<" ".?" "::" ":::"
+      ":=" "::=" ":?" ":?>" "//" "///" "/*" "*/" "/=" "//=" "/==" "@_" "__"))
+  (use-package ligature
+    :config
+    (ligature-set-ligatures 'prog-mode ligatures-JetBrainsMono)
+    (ligature-set-ligatures 'org-mode ligatures-JetBrainsMono)
+    (global-ligature-mode t))
+#+end_src
 
 * GRAPHICAL USER INTERFACE TWEAKS
 Make Emacs look a little bit better
@@ -169,10 +230,11 @@ Make Emacs look a little bit better
   (scroll-bar-mode -1)
 #+end_src
 
-** Enable line numbers
+** Enable relative line numbers and line wrapping
 #+begin_src emacs-lisp
-(global-display-line-numbers-mode 1)
-(global-visual-line-mode t)
+  (global-display-line-numbers-mode 1)
+(setq display-line-numbers 'relative)
+  (global-visual-line-mode t)
 #+end_src
 
 * Org mode
@@ -191,10 +253,58 @@ Org-bullets; Change asterisks with bullets
     (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 #+end_src
 
+** Disable Electric Indent
+Org mode source blocks have some weird default indentation behavior. Turning off electric indent may help with this.
+
+#+begin_src emacs-lisp
+  (electric-indent-mode -1)
+#+end_src
+
 ** Enable Org tempo
+소스 블럭 만들 때 '<s "TAB"'을 사용해 바로 소스블럭을 만들 수 있게 해주는 기능. 다른 여러 바로가기도 있다(표 참조).
+'<s "TAB"' to make source block easily. Other expansions available include:
+
+| Typing the below + TAB | Expands to...                             |
+|------------------------+-------------------------------------------|
+| <a                     | '#+BEGIN_EXPORT ascii' ... '#+END_EXPORT  |
+| <c                     | '#+BEGIN_CENTER' ... '#+END_CENTER'       |
+| <C                     | '#+BEGIN_COMMENT' ... '#+END_COMMENT'     |
+| <e                     | '#+BEGIN_EXAMPLE' ... '#+END_EXAMPLE'     |
+| <E                     | '#+BEGIN_EXPORT' ... #+END_EXPORT'        |
+| <h                     | '#+BEGIN_EXPORT html' ... '#+END_EXPORT'  |
+| <l                     | '#+BEGIN_EXPORT latex' ... '#+END_EXPORT' |
+| <q                     | '#+BEGIN_QUOTE' ... '#+END_QUOTE'         |
+| <s                     | '#+BEGIN_SRC' ... '#+END_SRC'             |
+| <v                     | '#+BEGIN_VERSE' ... '#+END_VERSE'         |
+
 #+begin_src emacs-lisp
   (require 'org-tempo)
   #+end_src
+
+* Reload Emacs
+init.el 파일을 열 때 한 번만 로드를 하면 단축키가 제대로 로드가 안되는 현상이 있다고 하여 두 번 로드하는 함수를 만들어서 사용한다.
+loading the init.el file once don't load key bindings properly.
+defining a function to load it twice.
+#+begin_src emacs-lisp
+  (defun reload-init-file ()
+  (interactive)
+  (load-file user-init-file)
+  (load-file user-init-file))
+#+end_src
+
+* SUDO EDIT
+루트 권한을 가져야하는 파일을 열 수 있게 해 주거나, 권한 없이 (읽기 전용) 파일을 열었을 때 수정을 할 수 있게 해준다.
+Makes us able to open files with sudo privileges or switch over to editing with sudo privileges when the file opened without sudo privileges.
+
+#+begin_src emacs-lisp
+  (use-package sudo-edit
+  :config
+  (dobin/leader-keys
+  "f u" '(sudo-edit-find-file :wk "Sudo find file")
+  "f U" '(sudo-edit :wk "Sudo edit file"))
+)
+#+end_src
+
 * Which-Key
 #+begin_src emacs-lisp
   (use-package which-key
@@ -212,5 +322,5 @@ Org-bullets; Change asterisks with bullets
 	which-key-idle-delay 0.1
 	which-key-max-description-length 40
 	which-key-allow-imprecise-window-fit t
-        which-key-separator "    " ))
+        which-key-separator " -> " ))
 #+end_src 

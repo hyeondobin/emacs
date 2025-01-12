@@ -1,0 +1,9 @@
+# directories
+/elpaca
+/auto-save-list
+
+# files
+config.el
+*.el#
+# ignore tmp files
+*.*~

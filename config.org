@@ -16,6 +16,8 @@
 - [[#graphical-user-interface-tweaks][GRAPHICAL USER INTERFACE TWEAKS]]
   - [[#disable-bars][Disable bars]]
   - [[#enable-relative-line-numbers-and-line-wrapping][Enable relative line numbers and line wrapping]]
+- [[#language-modes][Language Modes]]
+  - [[#nix-mode][Nix-mode]]
 - [[#org-mode][Org mode]]
   - [[#enable-table-of-contents][Enable Table of Contents]]
   - [[#enable-org-bullets][Enable Org Bullets]]
@@ -235,6 +237,15 @@ Make Emacs look a little bit better
   (global-display-line-numbers-mode 1)
 (setq display-line-numbers 'relative)
   (global-visual-line-mode t)
+#+end_src
+
+* Language Modes
+** Nix-mode
+Nix 파일에서 사용할 Major Mode. 
+
+#+begin_src emacs-lisp
+(use-package nix-mode
+:mode "\\.nix\\'")
 #+end_src
 
 * Org mode

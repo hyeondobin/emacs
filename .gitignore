@@ -1,6 +1,7 @@
 # directories
 /elpaca
 /auto-save-list
+/eln-cache
 
 # files
 config.el

@@ -5,6 +5,6 @@
 
 # files
 config.el
-*.el#
 # ignore tmp files
 *.*~
+*.*#

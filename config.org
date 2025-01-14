@@ -20,6 +20,7 @@
   - [[#enable-relative-line-numbers-and-line-wrapping][Enable relative line numbers and line wrapping]]
 - [[#ivy-counsel][IVY (COUNSEL)]]
 - [[#language-modes][Language Modes]]
+  - [[#korean][Korean]]
   - [[#nix-mode][Nix-mode]]
 - [[#org-mode][Org mode]]
   - [[#enable-table-of-contents][Enable Table of Contents]]
@@ -76,7 +77,7 @@
   (elpaca elpaca-use-package
     ;; Enable use-package :ensure support for Elpaca.
     (elpaca-use-package-mode)
-  (setq use-package-always-ensure t))
+    (setq use-package-always-ensure t))
 
   ;; Turns off elpaca-use-package-mode current declaration
   ;; Note this will cause the declaration to be interpreted immediately (not deffered).
@@ -88,26 +89,26 @@
 ** Load Evil Mode
 #+begin_src elisp
   (use-package evil
-  :init
-  (setq evil-want-integration t)
-  (setq evil-want-keybinding nil)
-  (setq evil-vsplit-window-right t)
-  (setq evil-split-window-below t)
-  (setq evil-want-C-u-scroll t)
-  ;;(setq evil-undo-system 'undo-tree)
-  (evil-mode))
+    :init
+    (setq evil-want-integration t)
+    (setq evil-want-keybinding nil)
+    (setq evil-vsplit-window-right t)
+    (setq evil-split-window-below t)
+    (setq evil-want-C-u-scroll t)
+    ;;(setq evil-undo-system 'undo-tree)
+    (evil-mode))
 
   (use-package undo-tree
-  :after evil
-  :diminish
-  :config
-  (evil-set-undo-system 'undo-tree)
-  (global-undo-tree-mode 1))
+    :after evil
+    :diminish
+    :config
+    (evil-set-undo-system 'undo-tree)
+    (global-undo-tree-mode 1))
   (use-package evil-collection
     :after evil
-  :config
-  (setq evil-collection-mode-list '(dashboard dired ibuffer))
-  (evil-collection-init))
+    :config
+    (setq evil-collection-mode-list '(dashboard dired ibuffer))
+    (evil-collection-init))
   (use-package evil-tutor)
 
 #+END_src
@@ -176,17 +177,17 @@
     )
 
 
- #+end_src
+#+end_src
 
 * All the icons
 The icon set that can be used with dashboard, dired, ibuffer and other Emacs programs.
 
 #+begin_src emacs-lisp
-(use-package all-the-icons
-:if (display-graphic-p))
+  (use-package all-the-icons
+    :if (display-graphic-p))
 
-(use-package all-the-icons-dired
-:hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
+  (use-package all-the-icons-dired
+    :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
 #+end_src
 
 * BUFFERMOVE
@@ -199,23 +200,23 @@ Definig fonts to use in Emacs
 ** Setting The Font Face
 #+begin_src emacs-lisp
   (set-face-attribute 'default nil
-  :font "JetBrainsMono NF"
-  :height 150
-  :weight 'medium)
+                      :font "JetBrainsMono NF"
+                      :height 150
+                      :weight 'medium)
   (set-face-attribute 'variable-pitch nil
-  :font "FiraCode Nerd Font"
-  :height 160
-  :weight 'medium)
+                      :font "FiraCode Nerd Font"
+                      :height 160
+                      :weight 'medium)
   (set-face-attribute 'fixed-pitch nil
-  :font "JetBrainsMono NF"
-  :height 150
-  :weight 'medium)
+                      :font "JetBrainsMono NF"
+                      :height 150
+                      :weight 'medium)
 
   ;; Make commented text and keywords italics.
   (set-face-attribute 'font-lock-comment-face nil
-  :slant 'italic)
+                      :slant 'italic)
   (set-face-attribute 'font-lock-keyword-face nil
-  :slant 'italic)
+                      :slant 'italic)
 
   ;; fix emacsclient default font
   (add-to-list 'default-frame-alist '(font . "JetBrainsMono NF-15"))
@@ -269,7 +270,7 @@ Make Emacs look a little bit better
 ** Enable relative line numbers and line wrapping
 #+begin_src emacs-lisp
   (global-display-line-numbers-mode 1)
-(setq display-line-numbers 'relative)
+  (setq display-line-numbers 'relative)
   (global-visual-line-mode t)
 #+end_src
 
@@ -279,58 +280,75 @@ Make Emacs look a little bit better
 + Ivy-rich allow us to add descriptions alongside the commands in M-x.
   
 #+begin_src emacs-lisp
-          (use-package counsel
-          :after ivy
-          :config (counsel-mode))
+  (use-package counsel
+    :after ivy
+    :config (counsel-mode))
 
-        (use-package ivy
-        :bind
-          ;; ivy-resume resumes the last Ivy-based completion.
-        (("C-c C-r" . ivy-resume)
-      ("C-x B" . ivy-switch-buffer-other-window))
-      :custom
-      (setq ivy-use-virtual-buffers t)
-      (setq ivy-count-format "(%d/%d) ")
-      (setq enable-recursive-minibuffers t)
-      :config
-      (ivy-mode))
+  (use-package ivy
+    :bind
+    ;; ivy-resume resumes the last Ivy-based completion.
+    (("C-c C-r" . ivy-resume)
+     ("C-x B" . ivy-switch-buffer-other-window))
+    :custom
+    (setq ivy-use-virtual-buffers t)
+    (setq ivy-count-format "(%d/%d) ")
+    (setq enable-recursive-minibuffers t)
+    :config
+    (ivy-mode))
 
-    (use-package all-the-icons-ivy-rich
-      :init (all-the-icons-ivy-rich-mode 1))
+  (use-package all-the-icons-ivy-rich
+    :init (all-the-icons-ivy-rich-mode 1))
   (use-package ivy-rich
-  :after ivy
-  :init (ivy-rich-mode 1)
-  :custom
-  (ivy-virtual-abbreviate 'full
-  ivy-rich-switch-buffer-align-virtual-buffer t
-  ivy-rich-path-style 'abbrev)
-  :config
-  (ivy-set-display-transformer 'ivy-switch-buffer
-  'ivy-rich-switch-buffer-transformer))
+    :after ivy
+    :init (ivy-rich-mode 1)
+    :custom
+    (ivy-virtual-abbreviate 'full
+                            ivy-rich-switch-buffer-align-virtual-buffer t
+                            ivy-rich-path-style 'abbrev)
+    :config
+    (ivy-set-display-transformer 'ivy-switch-buffer
+                                 'ivy-rich-switch-buffer-transformer))
 #+end_src
 * Language Modes
+** Korean
+한글 입력을 위한 세팅.
+#+begin_src emacs-lisp
+(set-language-environment "Korean")
+(prefer-coding-system 'utf-8)
+(custom-set-variables
+  ;; UTF-8 
+  '(current-language-environment "UTF-8")
+  ;; Input method
+  '(default-input-method "korean-hangul"))
+#+end_src
+
+한글 폰트 설정
+#+begin_src macs-lisp
+(set-fontset-font t 'hangul (font-spec :name "D2CodingLigature Nerd Font"))
+#+end_src
+
 ** Nix-mode
 Nix 파일에서 사용할 Major Mode. 
 
 #+begin_src emacs-lisp
-(use-package nix-mode
-:mode "\\.nix\\'")
+  (use-package nix-mode
+    :mode "\\.nix\\'")
 #+end_src
 
 * Org mode
 ** Enable Table of Contents
 #+begin_src emacs-lisp
   (use-package toc-org
-  :commands toc-org-enable
-  :init (add-hook 'org-mode-hook 'toc-org-enable))
+    :commands toc-org-enable
+    :init (add-hook 'org-mode-hook 'toc-org-enable))
 
 #+end_src
 ** Enable Org Bullets
 Org-bullets; Change asterisks with bullets
 #+begin_src emacs-lisp
-    (add-hook 'org-mode-hook 'org-indent-mode)
+  (add-hook 'org-mode-hook 'org-indent-mode)
   (use-package org-bullets)
-    (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 #+end_src
 
 ** Disable Electric Indent
@@ -359,7 +377,7 @@ Org mode source blocks have some weird default indentation behavior. Turning off
 
 #+begin_src emacs-lisp
   (require 'org-tempo)
-  #+end_src
+#+end_src
 
 * Reload Emacs
 init.el 파일을 열 때 한 번만 로드를 하면 단축키가 제대로 로드가 안되는 현상이 있다고 하여 두 번 로드하는 함수를 만들어서 사용한다.
@@ -367,9 +385,9 @@ loading the init.el file once don't load key bindings properly.
 defining a function to load it twice.
 #+begin_src emacs-lisp
   (defun reload-init-file ()
-  (interactive)
-  (load-file user-init-file)
-  (load-file user-init-file))
+    (interactive)
+    (load-file user-init-file)
+    (load-file user-init-file))
 #+end_src
 
 * SUDO EDIT
@@ -378,29 +396,29 @@ Makes us able to open files with sudo privileges or switch over to editing with 
 
 #+begin_src emacs-lisp
   (use-package sudo-edit
-  :config
-  (dobin/leader-keys
-  "f u" '(sudo-edit-find-file :wk "Sudo find file")
-  "f U" '(sudo-edit :wk "Sudo edit file"))
-)
+    :config
+    (dobin/leader-keys
+      "f u" '(sudo-edit-find-file :wk "Sudo find file")
+      "f U" '(sudo-edit :wk "Sudo edit file"))
+    )
 #+end_src
 
 * Which-Key
 #+begin_src emacs-lisp
   (use-package which-key
-  :init
-  (which-key-mode 1)
-  :config
-  (setq which-key-side-window-location 'bottom
-	which-key-sort-order #'which-key-key-order-alpha
-	which-key-sort-uppercase-first nil
-	which-key-add-column-padding 1
-	which-key-max-display-columns nil
-	which-key-min-display-lines 6
-	which-key-side-window-slot -10
-	which-key-side-window-max-height 0.25
-	which-key-idle-delay 0.1
-	which-key-max-description-length 40
-	which-key-allow-imprecise-window-fit t
-        which-key-separator " -> " ))
+    :init
+    (which-key-mode 1)
+    :config
+    (setq which-key-side-window-location 'bottom
+          which-key-sort-order #'which-key-key-order-alpha
+          which-key-sort-uppercase-first nil
+          which-key-add-column-padding 1
+          which-key-max-display-columns nil
+          which-key-min-display-lines 6
+          which-key-side-window-slot -10
+          which-key-side-window-max-height 0.25
+          which-key-idle-delay 0.1
+          which-key-max-description-length 40
+          which-key-allow-imprecise-window-fit t
+          which-key-separator " -> " ))
 #+end_src 

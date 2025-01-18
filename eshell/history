@@ -1,0 +1,24 @@
+ls
+l
+ls
+.
+ls
+fish
+ls
+exit
+iconv
+iconv -h
+iconv -c -f euc-kr -t utf-8 config.org > test.org
+iconv
+iconv -l
+iconv -c -f euc-kr -t utf-8 config.org test.org 
+iconv -h
+iconv -h -s
+iconv --help
+iconv -c -f euc-kr-dos -t utf-8-dos config.org trans.org
+iconv -l
+iconv -c -f euc-kr -t utf-8-dos config.org trans.org
+iconv -c -f euc-kr -t utf-8 config.org trans.org
+iconv -c -f euc-kr -t utf-8 config.org > trans.org 
+iconv -c -f euc-kr -t utf-16 config.org > trans.org
+iconv -c -f utf-8 -t euc-kr config.org > trans.org

@@ -1,0 +1,16 @@
+# Aliases for emacs commands
+alias ff find-file $1
+
+# Aliasing standard shell commands to better emacs alternatives.
+alias less view-file $1
+
+# Change ls to eza
+alias ls eza -lah --color=always --group-directories-first $*
+alias la eza -a --color=always --group-directories-first $*
+alias ll eza -l --color=always --group-directories-first $*
+alias lt eza -aT --color=always --group-directories-first $*
+
+# Get confirmation before process
+alias cp cp -i $1
+alias mv mv -i $1
+alias rm rm -i $1

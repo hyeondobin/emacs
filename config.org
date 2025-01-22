@@ -10,7 +10,8 @@
   - [[#load-evil-mode][Load Evil Mode]]
   - [[#general-keybindings][General Keybindings]]
 - [[#all-the-icons][All the icons]]
-- [[#buffermove][BUFFERMOVE]]
+- [[#buffermove][Buffermove]]
+- [[#completion][Completion]]
 - [[#fonts][Fonts]]
   - [[#setting-the-font-face][Setting The Font Face]]
   - [[#zooming-inout][Zooming In/Out]]
@@ -126,12 +127,12 @@
   (use-package general
     :config
     (general-evil-setup)
-    ;; setup 'SPC' as the global leader key
+    ;; setup 'comma' as the global leader key
     (general-create-definer dobin/leader-keys
       :states '(normal insert visual emacs)
       :keymaps 'override
-      :prefix "SPC" ;; set leader key here
-      :global-prefix "M-SPC") ;; access leader in insert mode 
+      :prefix "," ;; set leader key here
+      :global-prefix "M-,") ;; access leader in insert mode 
 
     (dobin/leader-keys
       "f" '(:ignore t :wk "Find / File")
@@ -163,7 +164,8 @@
       "h" '(:ignore t :wk "Help")
       "h f" '(describe-function :wk "Describe function")
       "h v" '(describe-variable :wk "Describe variable")
-      "h r r" '(reload-init-file :wk "Reload Emacs config"))
+      "h r r" '(reload-init-file :wk "Reload Emacs config")
+      "h o" '(describe-symbol :wk "Describe Symbol"))
 
     (dobin/leader-keys
       "t" '(:ignore t :wk "Toggle")
@@ -198,10 +200,16 @@ The icon set that can be used with dashboard, dired, ibuffer and other Emacs pro
     :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
 #+end_src
 
-* BUFFERMOVE
-버퍼를 원하는 위치로 옮길 수 있는데 필요한지는 아직 모르겠음.
+* Buffermove
 link: emacswiki.org/emacs/buffer-move.el
 
+
+* Completion
+
+Auto completion. 
+#+begin_src emacs-lisp
+
+#+end_src
 * Fonts
 Definig fonts to use in Emacs
 
@@ -234,7 +242,6 @@ Definig fonts to use in Emacs
 #+end_src
 
 ** Zooming In/Out
- 간소화하기 위해 키맵을 추가한다. 'C-x C-=' 에서 "C-x"만 없애는 느낌.
 Make zooming in/out easier. E.g. From 'C-x C-=' removing "C-x".
 
 #+begin_src emacs-lisp
@@ -278,8 +285,8 @@ Make Emacs look a little bit better
 ** Enable relative line numbers and line wrapping
 #+begin_src emacs-lisp
   (global-display-line-numbers-mode 1)
-  (setq display-line-numbers 'relative)
   (global-visual-line-mode t)
+  (setq display-line-numbers 'relative)
 #+end_src
 
 * IVY (COUNSEL) 
@@ -295,8 +302,8 @@ Make Emacs look a little bit better
   (use-package ivy
     :bind
     ;; ivy-resume resumes the last Ivy-based completion.
-    (("C-c C-r" . ivy-resume)
-     ("C-x B" . ivy-switch-buffer-other-window))
+    ( ("C-c C-r" . ivy-resume)
+      ("C-x b" . ivy-switch-buffer-other-window))
     :custom
     (setq ivy-use-virtual-buffers t)
     (setq ivy-count-format "(%d/%d) ")
@@ -318,8 +325,9 @@ Make Emacs look a little bit better
                                  'ivy-rich-switch-buffer-transformer))
 #+end_src
 * Language Modes
+
 ** Korean
-한글 입력을 위한 세팅.
+
 #+begin_src emacs-lisp
 (set-language-environment "Korean")
 (prefer-coding-system 'utf-8)
@@ -330,13 +338,11 @@ Make Emacs look a little bit better
   '(default-input-method "korean-hangul"))
 #+end_src
 
-한글 폰트 설정
 #+begin_src macs-lisp
 (set-fontset-font t 'hangul (font-spec :name "D2CodingLigature Nerd Font"))
 #+end_src
 
 ** Nix-mode
-Nix 파일에서 사용할 Major Mode. 
 
 #+begin_src emacs-lisp
   (use-package nix-mode
@@ -367,8 +373,12 @@ Org mode source blocks have some weird default indentation behavior. Turning off
 #+end_src
 
 ** Enable Org tempo
-소스 블럭 만들 때 '<s "TAB"'을 사용해 바로 소스블럭을 만들 수 있게 해주는 기능. 다른 여러 바로가기도 있다(표 참조).
-'<s "TAB"' to make source block easily. Other expansions available include:
+
+'<s "TAB"' to make source block easily. 
+Same as org-insert-structure-template which is bound to C-c C-, by default.
+As later one can wrap active region, I think I should have that in mind, too.
+
+Other expansions available include:
 
 | Typing the below + TAB | Expands to...                             |
 |------------------------+-------------------------------------------|
@@ -388,7 +398,7 @@ Org mode source blocks have some weird default indentation behavior. Turning off
 #+end_src
 
 * Rainbow mode
-Hex code의 실제 색을 배경색으로 보여준다. ex) #ffffff
+Show the actual color of Hex code as background color. ex) #ffffff
 
 #+begin_src emacs-lisp
   (use-package rainbow-mode
@@ -396,7 +406,6 @@ Hex code의 실제 색을 배경색으로 보여준다. ex) #ffffff
 #+end_src
 
 * Reload Emacs
-init.el 파일을 열 때 한 번만 로드를 하면 단축키가 제대로 로드가 안되는 현상이 있다고 하여 두 번 로드하는 함수를 만들어서 사용한다.
 loading the init.el file once don't load key bindings properly.
 defining a function to load it twice.
 #+begin_src emacs-lisp
@@ -464,7 +473,7 @@ Toggle buffer between current buffer with vterm buffer.
 
 
 * SUDO EDIT
-루트 권한을 가져야하는 파일을 열 수 있게 해 주거나, 권한 없이 (읽기 전용) 파일을 열었을 때 수정을 할 수 있게 해준다.
+
 Makes us able to open files with sudo privileges or switch over to editing with sudo privileges when the file opened without sudo privileges.
 
 #+begin_src emacs-lisp
@@ -477,8 +486,8 @@ Makes us able to open files with sudo privileges or switch over to editing with 
 #+end_src
 
 * Theme
-Catppuccin을 테마로 설정한다. Theme Creator 라는 사이트에서 직접 만들 수 있다고 한다. 
-Use catppuccin for theme
+
+Use catppuccin for theme. Can make theme at Theme Creator
 #+begin_src emacs-lisp
 (use-package catppuccin-theme
 :config
@@ -487,6 +496,7 @@ Use catppuccin for theme
 #+end_src
 
 * Which-Key
+
 #+begin_src emacs-lisp
   (use-package which-key
     :init

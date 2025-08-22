@@ -59,7 +59,20 @@
 (global-set-key (kbd "C-c d") 'dired)
 
 (setq treesit-language-source-alist
-      '((elisp "https://github.com/Wilfred/tree-sitter-elisp")))
+      '((elisp "https://github.com/Wilfred/tree-sitter-elisp")
+      (html "https://github.com/tree-sitter/tree-sitter-html")))
 	
-(treesit-install-language-grammar 'elisp)
-(add-to-list 'major-mode-remap-alist '(emacs-lisp-mode . lisp-ts-mode))
+(use-package treesit-auto
+  :ensure t
+:custom
+(treesit-auto-install 'prompt)
+:config
+(treesit-auto-add-to-auto-mode-alist 'all)
+(global-treesit-auto-mode))
+
+(use-package transient :ensure t)
+(use-package magit :ensure t :after transient
+:bind
+("C-x g" . magit-status)
+;;:config
+)

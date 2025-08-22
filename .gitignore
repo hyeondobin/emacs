@@ -2,6 +2,7 @@
 /elpaca
 /auto-save-list
 /eln-cache
+/url/cache
 
 # files
 config.el
@@ -9,3 +10,6 @@ config.el
 *.*~
 *.*#
 recentf
+
+
+eshell/alias~

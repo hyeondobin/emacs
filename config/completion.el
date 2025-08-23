@@ -1,3 +1,7 @@
+(defun dobin/select-and-insert ()
+    (interactive)
+  (corfu-next)
+  (corfu-insert))
 (use-package corfu
   :ensure t
   :custom
@@ -8,13 +12,20 @@
   (corfu-preselect 'prompt)
   (corfu-on-exact-match nil)
   :init
-  (global-corfu-mode))
+  (global-corfu-mode)
+  :bind
+  (:map corfu-map ("SPC" . corfu-insert-separator))
+  :config
+  (define-key corfu-map (kbd "RET") nil)
+  (define-key corfu-map (kbd "C-n") nil)
+  (define-key corfu-map (kbd "C-y") 'dobin/select-and-insert))
 
 (use-package orderless
   :ensure t
   :custom
-  (completion-styles '(orderless basic))
-  (completion-category-overrides '((file (styles . (partial-completion))))))
+  (completion-styles '(orderless flex))
+  (completion-category-overrides '((file (styles . (partial-completion)))))
+  (setq orderless-matching-styles '(orderless-flex)))
 
 (use-package cape
   :ensure t

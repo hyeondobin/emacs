@@ -41,10 +41,17 @@
 (elpaca elpaca-use-package
   (elpaca-use-package-mode))
 
+;;; Elpaca Bootstrap done
+
+;; Maximize screen on startup
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+(add-to-list 'initial-frame-alist '(fullscreen . maximized))
+
 (add-to-list 'load-path (expand-file-name "config" user-emacs-directory))
 
 (require 'colors)
 (require 'completion)
+(require 'keybinds)
 
 (use-package which-key
   :ensure t
@@ -53,10 +60,6 @@
 
 (setenv "EDITOR" "emacs")
 
-(global-set-key (kbd "C-c s") 'eshell)
-(global-set-key (kbd "C-c C-s") 'eshell)
-
-(global-set-key (kbd "C-c d") 'dired)
 
 (setq treesit-language-source-alist
       '((elisp "https://github.com/Wilfred/tree-sitter-elisp")
@@ -76,3 +79,5 @@
 ("C-x g" . magit-status)
 ;;:config
 )
+
+ 

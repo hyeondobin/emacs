@@ -1,2 +1,2 @@
-alias la ls -lah
 alias ee find-file ~/.emacs.d/init.el
+alias la ls -lah

@@ -14,7 +14,7 @@
   :init
   (global-corfu-mode)
   :bind
-  (:map corfu-map ("SPC" . corfu-insert-separator))
+  (:map corfu-map ("S-SPC" . corfu-insert-separator))
   :config
   (define-key corfu-map (kbd "RET") nil)
   (define-key corfu-map (kbd "C-n") nil)

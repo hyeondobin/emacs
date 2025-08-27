@@ -59,6 +59,7 @@
   (which-key-mode 1))
 
 (setenv "EDITOR" "emacs")
+(setenv "SSH_AUTH_SOCK" "${HOME}/.bitwarden-ssh-agent.sock")
 
 
 (setq treesit-language-source-alist

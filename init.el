@@ -59,7 +59,7 @@
   (which-key-mode 1))
 
 (setenv "EDITOR" "emacs")
-(setenv "SSH_AUTH_SOCK" "${HOME}/.bitwarden-ssh-agent.sock")
+(setenv "SSH_AUTH_SOCK" "$HOME/.bitwarden-ssh-agent.sock")
 
 
 (setq treesit-language-source-alist
@@ -76,8 +76,8 @@
 
 (use-package transient :ensure t)
 (use-package magit :ensure t :after transient
-:bind
-("C-x g" . magit-status)
+;;:bind
+;;("C-x g" . magit-status)
 ;;:config
 )
 

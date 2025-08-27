@@ -44,14 +44,14 @@
 ;;; Elpaca Bootstrap done
 
 ;; Maximize screen on startup
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
-(add-to-list 'initial-frame-alist '(fullscreen . maximized))
 
 (add-to-list 'load-path (expand-file-name "config" user-emacs-directory))
 
 (require 'colors)
 (require 'completion)
 (require 'keybinds)
+(require 'UIs)
+(require 'fonts)
 
 (use-package which-key
   :ensure t
@@ -61,6 +61,7 @@
 (setenv "EDITOR" "emacs")
 (setenv "SSH_AUTH_SOCK" (concat (getenv "HOME") "/.bitwarden-ssh-agent.sock"))
 
+(recentf-mode 1)
 
 (setq treesit-language-source-alist
       '((elisp "https://github.com/Wilfred/tree-sitter-elisp")

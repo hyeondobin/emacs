@@ -50,8 +50,10 @@
 (require 'colors)
 (require 'completion)
 (require 'keybinds)
+(require 'inputs)
 (require 'UIs)
 (require 'fonts)
+(require 'orgs)
 
 (use-package which-key
   :ensure t

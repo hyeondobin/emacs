@@ -50,8 +50,27 @@
 	 entry (file+headline "~/org/notes.org" "Random notes")
 	 "** %?"
 	 :empty-lines 0)
+	("g" "General To-Do"
+	 entry (file+headline "~/org/todos.org" "General Tasks")
+	 "* TODO [#B] %?\n:Created: %T\n "
+	 :empty-lines 0)
 	))
 
-
+;; TODO states
+(setq org-todo-keywords
+      '((sequence "TODO(t)" "PLANNING(p)" "IN-PROGRESS(i@/!)" "VERIFYING(v!)" "BLOCKED(b@)" "|" "DONE(d!)" "OBE(o@!)" "WONT-DO(w@/!)" )
+	))
+;; TODO Colors
+(setq org-todo-keyword-faces
+      '(
+	("TODO" . (:foreground "GoldenRod" :weight bold))
+	("PLANNING" . (:foreground "DeepPink" :weight bold))
+	("IN-PROGRESS" . (:foreground "Cyan" :weight bold))
+	("VERIFYING" . (:foreground "DarkOrange" :weight bold))
+	("BLOCKED" . (:foreground "Red" :weight bold))
+	("DONE" . (:foreground "LimeGreen" :weight bold))
+	("OBE" . (:foreground "LimeGreen" :weight bold))
+	("WONT-DO" . (:foreground "LimeGreen" :weight bold))
+	))
 
 (provide 'orgs)

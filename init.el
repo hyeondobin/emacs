@@ -84,4 +84,19 @@
 ;;:config
 )
 
- 
+(use-package sudo-edit :ensure t)
+(use-package auto-sudoedit
+  :ensure t
+  :config
+  (auto-sudoedit-mode 1))
+
+(require 'tramp)
+(setq tramp-remote-path
+      '(tramp-own-remote-path
+	"/run/current-system/sw/bin"
+	"/usr/local/bin" "/usr/bin" "/bin"))
+(add-to-list 'tramp-remote-path "/run/current-system/sw/bin")
+(setq tramp-default-remote-shell "/run/current-system/sw/bin/bash")
+(setq tramp-shell-prompt-pattern "\\(?:^\\|\\)[^]#$%>\n]*#?[]#$%>] *\\(\\[[0-9;]*[a-zA-Z] *\\)*")
+
+(setq tramp-verbose 6)

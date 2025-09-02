@@ -1,5 +1,5 @@
 (setq face-font-rescale-alist '((".D2Coding." . 1.26)))
-(add-to-list 'default-frame-alist '(font . "D2Coding Nerd Font"))
+(add-to-list 'default-frame-alist '(font . "D2CodingLigature Nerd Font"))
 
 (set-face-attribute 'default nil
 		    :height 140

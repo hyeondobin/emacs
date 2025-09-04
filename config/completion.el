@@ -33,12 +33,17 @@
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-dabbrev))
 
+(defun dobin/prog-mode-hook ()
+  (unless (derived-mode-p 'emacs-lisp-mode)))
+
 (use-package lsp-mode
   :ensure t
   :commands lsp
   :custom
   (lsp-completion-provider :none)
   :hook
+  (dobin/prog-mode-hook)
+  (lsp-mode . lsp-enable-which-key-integration)
   (lsp-completion-mode . (lambda ()
 			   (self (alist-get 'lsp-capf completion-category-defaults)
 				 '((styles . (orderless))))))

@@ -53,6 +53,7 @@
 (require 'inputs)
 (require 'UIs)
 (require 'fonts)
+(require 'lang)
 (require 'orgs)
 
 (use-package which-key
@@ -67,7 +68,8 @@
 
 (setq treesit-language-source-alist
       '((elisp "https://github.com/Wilfred/tree-sitter-elisp")
-      (html "https://github.com/tree-sitter/tree-sitter-html")))
+	(html "https://github.com/tree-sitter/tree-sitter-html")
+	(nix "https://github.com/nix-community/tree-sitter-nix")))
 	
 (use-package treesit-auto
   :ensure t

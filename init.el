@@ -107,9 +107,6 @@
 
 (setq tramp-verbose 6)
 
-(use-package vterm
-  :ensure t
-  :bind
-  ("C-z t" . vterm))
+(use-package vterm)
 
   

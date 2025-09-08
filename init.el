@@ -102,3 +102,7 @@
 (setq tramp-shell-prompt-pattern "\\(?:^\\|\\)[^]#$%>\n]*#?[]#$%>] *\\(\\[[0-9;]*[a-zA-Z] *\\)*")
 
 (setq tramp-verbose 6)
+
+(use-package vterm
+  :ensure t)
+  

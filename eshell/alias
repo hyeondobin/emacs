@@ -2,3 +2,4 @@ alias ee find-file ~/.emacs.d/init.el
 alias la eza -lah
 alias fx ~/scripts/start-fcitx5-wsl2.sh
 alias nrs doas nixos-rebuild switch
+alias nos nh os switch 

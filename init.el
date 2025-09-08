@@ -40,6 +40,7 @@
 ;; use-package support
 (elpaca elpaca-use-package
   (elpaca-use-package-mode))
+(setq use-package-always-ensure t)
 
 ;;; Elpaca Bootstrap done
 
@@ -61,6 +62,8 @@
   :config
   (which-key-mode 1))
 
+(electric-pair-mode 1)
+
 (setenv "EDITOR" "emacs")
 (setenv "SSH_AUTH_SOCK" (concat (getenv "HOME") "/.bitwarden-ssh-agent.sock"))
 
@@ -69,15 +72,16 @@
 (setq treesit-language-source-alist
       '((elisp "https://github.com/Wilfred/tree-sitter-elisp")
 	(html "https://github.com/tree-sitter/tree-sitter-html")
-	(nix "https://github.com/nix-community/tree-sitter-nix")))
+	(nix "https://github.com/nix-community/tree-sitter-nix")
+	(css "https://github.com/tree-sitter/tree-sitter-css")))
 	
 (use-package treesit-auto
   :ensure t
-:custom
-(treesit-auto-install 'prompt)
-:config
-(treesit-auto-add-to-auto-mode-alist 'all)
-(global-treesit-auto-mode))
+  :custom
+  (treesit-auto-install 'prompt)
+  :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
 
 (use-package transient :ensure t)
 (use-package magit :ensure t :after transient
@@ -106,6 +110,5 @@
 (use-package vterm
   :ensure t
   :bind
-  ("C-c t" . vterm)
-  )
+  ("C-c t" . vterm))
   

@@ -110,5 +110,6 @@
 (use-package vterm
   :ensure t
   :bind
-  ("C-c t" . vterm))
+  ("C-z t" . vterm))
+
   

@@ -1,3 +1,4 @@
+;; elpaca 부트스트랩
 (defvar elpaca-installer-version 0.11)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
@@ -73,8 +74,8 @@
       '((elisp "https://github.com/Wilfred/tree-sitter-elisp")
 	(html "https://github.com/tree-sitter/tree-sitter-html")
 	(nix "https://github.com/nix-community/tree-sitter-nix")
-	(css "https://github.com/tree-sitter/tree-sitter-css")))
-	
+	(css "https://github.com/tree-sitter/tree-sitter-css")))	
+
 (use-package treesit-auto
   :ensure t
   :custom
@@ -105,8 +106,12 @@
 (setq tramp-default-remote-shell "/run/current-system/sw/bin/bash")
 (setq tramp-shell-prompt-pattern "\\(?:^\\|\\)[^]#$%>\n]*#?[]#$%>] *\\(\\[[0-9;]*[a-zA-Z] *\\)*")
 
-(setq tramp-verbose 6)
-
 (use-package vterm)
 
-  
+;; fix clipboard not working in wsl with pgtk
+;; https://www.lukas-barth.net/blog/emacs-wsl-copy-clipboard/
+(setq select-active-regions nil)
+(setq select-enable-clipboard 't)
+(setq select-enable-primary nil)
+(setq interprogram-cut-function #'gui-select-text)
+

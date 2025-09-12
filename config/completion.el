@@ -74,7 +74,6 @@
   (corfu-insert))
 
 (use-package corfu
-  :ensure t
   :custom
   (corfu-auto t)
   (corfu-auto-delay 0.2)
@@ -82,6 +81,7 @@
   (corfu-preview-current 'insert)
   (corfu-preselect 'prompt)
   (corfu-on-exact-match nil)
+  (global-corfu-minibuffer nil)
   :init
   (global-corfu-mode)
   :bind

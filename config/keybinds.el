@@ -16,7 +16,7 @@
 
 
 
-(global-set-key (kbd "C-z i") 'dobin/open-init-file)
+(global-set-key (kbd "C-z C-f i") 'dobin/open-init-file)
 (global-set-key (kbd "C-z C-f r") 'consult-recent-file)
 (global-set-key (kbd "C-z C-i") 'ibuffer)
 (global-set-key (kbd "C-z d") 'dired-jump)

@@ -115,3 +115,7 @@
 (setq select-enable-primary nil)
 (setq interprogram-cut-function #'gui-select-text)
 
+;; ignore case for completing names
+(setq completion-ignore-case t)
+(setq read-file-name-completion-ignore-case t)
+(setq read-buffer-completion-ignore-case t)

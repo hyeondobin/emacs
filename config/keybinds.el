@@ -18,7 +18,7 @@
 
 (global-set-key (kbd "C-z C-f i") 'dobin/open-init-file)
 (global-set-key (kbd "C-z C-f r") 'consult-recent-file)
-(global-set-key (kbd "C-z C-i") 'ibuffer)
+(global-set-key (kbd "C-z C-i") 'consult-buffer)
 (global-set-key (kbd "C-z d") 'dired-jump)
 (global-set-key (kbd "C-z C-e n") 'dobin/open-nixos-flake)
 (global-set-key (kbd "C-z t") 'vterm)

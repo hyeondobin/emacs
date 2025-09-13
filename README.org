@@ -1,0 +1,6 @@
+* Dobin's Emacs config
+This is config for emacs 
+
+* Package Managing
+Using `Elpaca` for managing packages.
+

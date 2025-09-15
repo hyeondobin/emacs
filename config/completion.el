@@ -1,3 +1,6 @@
+;;; -*- lexical binding: t -*-
+;; managing completion related configs. 
+
 (use-package vertico
   :custom
   (vertico-cycle t)
@@ -70,7 +73,7 @@
   (setq consult-narrow-key "<"))
 
 (defun dobin/select-and-insert ()
-    (interactive)
+  (interactive)
   (corfu-next)
   (corfu-insert))
 
@@ -86,11 +89,16 @@
   :init
   (global-corfu-mode)
   :bind
-  (:map corfu-map ("S-SPC" . corfu-insert-separator))
-  :config
-  (define-key corfu-map (kbd "RET") nil)
-  (define-key corfu-map (kbd "C-n") nil)
-  (define-key corfu-map (kbd "C-y") 'dobin/select-and-insert))
+  (:map corfu-map
+	("S-SPC" . corfu-insert-separator)
+	;; use M-[n, p] to select completions and C-[n, p] to move cursor
+	([remap next-line] . nil)
+	([remap previous-line] . nil)
+	;; I want C-a or C-e to act as default
+	([remap move-beginning-of-line] . nil)
+	([remap move-end-of-line] . nil)
+	("RET" . nil)
+	("C-y" . dobin/select-and-insert)))
 
 (use-package orderless
   :ensure t
@@ -101,30 +109,52 @@
   (setq orderless-matching-styles '(orderless-flex)))
 
 (use-package cape
-  :ensure t
   :init
   (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-dabbrev))
-
-(defun dobin/prog-mode-hook ()
-  (unless (derived-mode-p 'emacs-lisp-mode)))
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-elisp-block))
 
 (use-package lsp-mode
-  :ensure t
-  :commands lsp
+  :commands (lsp lsp-deferred)
+  :init
+  (defun dobin/orderless-dispatch-flex-first (_pattern index _total)
+    (and (eq index 0) 'orderless-flex))
+  
+  (defun dobin/lsp-mode-setup-completion ()
+    (self (alist-get 'styles (alist-get 'lsp-capf completion-category-defaults))
+	  '(orderless)))
+  (add-hook 'orderless-style-dispatchers #'dobin/orderless-dispatch-flex-first nil 'local)
+  (setq-local completion-at-point-functions (list (cape-capf-buster #'lsp-completion-at-point)))
+  (setq lsp-keymap-prefix "C-c l")
   :custom
   (lsp-completion-provider :none)
+  
+  (lsp-format-buffer-on-save t)
+  (lsp-format-buffer-on-save-list '(nix-mode nix-ts-mode))
+  (lsp-diagnostics-mode t)
   :hook
-  (dobin/prog-mode-hook)
   (lsp-mode . lsp-enable-which-key-integration)
-  (lsp-completion-mode . (lambda ()
-			   (self (alist-get 'lsp-capf completion-category-defaults)
-				 '((styles . (orderless))))))
-  :init
-  (setq lsp-keymap-prefix "C-c l"))
+  (lsp-mode . lsp-diagnostics-mode)
+  (lsp-completion-mode . dobin/lsp-mode-setup-completion))
 
 (use-package lsp-ui
-  :ensure t
+  ;; :custom
   :commands lsp-ui-mode)
+
+(use-package lsp-nix
+  :ensure lsp-mode
+  :after lsp-mode
+  :demand t
+  :custom
+  (lsp-nix-nil-formatter ["nixfmt"]))
+
+(use-package flycheck
+  :init
+  (global-flycheck-mode))
+
+(use-package kind-icon
+  :after corfu
+  :config
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
 
 (provide 'completion)

@@ -142,7 +142,7 @@
   :commands lsp-ui-mode)
 
 (use-package lsp-nix
-  :ensure lsp-mode
+  ;; :ensure lsp-mode
   :after lsp-mode
   :demand t
   :custom

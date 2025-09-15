@@ -14,8 +14,8 @@
 (global-set-key (kbd "C-z C-s") 'eshell)
 (global-set-key (kbd "C-z C-o") 'delete-other-windows)
 
-
-
+;; https://stackoverflow.com/a/12558095/29108843
+(global-set-key (kbd "C-z C-f o") (lambda() (interactive) (find-file "~/org")))
 (global-set-key (kbd "C-z C-f i") 'dobin/open-init-file)
 (global-set-key (kbd "C-z C-f r") 'consult-recent-file)
 (global-set-key (kbd "C-z C-i") 'consult-buffer)

@@ -121,3 +121,7 @@
 (setq read-buffer-completion-ignore-case t)
 ;; https://emacs.stackexchange.com/a/34
 (setq backup-directory-alist '(("." . "~/.emacs.d/Backups")))
+
+;; display relative line number in prog-mode
+(setq display-line-numbers-type 'relative)
+(add-hook 'prog-mode-hook #'display-line-numbers-mode)

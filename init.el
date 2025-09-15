@@ -59,6 +59,7 @@
 (require 'orgs)
 
 (use-package which-key
+  :diminish t
   :ensure t
   :config
   (which-key-mode 1))

@@ -119,5 +119,5 @@
 (setq completion-ignore-case t)
 (setq read-file-name-completion-ignore-case t)
 (setq read-buffer-completion-ignore-case t)
-
+;; https://emacs.stackexchange.com/a/34
 (setq backup-directory-alist '(("." . "~/.emacs.d/Backups")))

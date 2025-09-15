@@ -2,6 +2,7 @@
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 (tab-bar-mode -1)
+(setq inhibit-splash-screen t)
 
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 (add-to-list 'initial-frame-alist '(fullscreen . maximized))
@@ -14,5 +15,10 @@
 (use-package rainbow-delimiters
   :hook
   (prog-mode . rainbow-delimiters-mode))
+
+;; dashboard
+(use-package dashboard
+  :config
+  (dashboard-setup-startup-hook))
 
  (provide 'UIs)

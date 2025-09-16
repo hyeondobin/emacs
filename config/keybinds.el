@@ -8,6 +8,7 @@
 ;; join line with C-M-j like C-j in vim's normal mode Note that C-u --
 ;; is passed as `-1'
 (global-set-key (kbd "C-M-j") (lambda () (interactive) (join-line -1)))
+(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
 ;; use C-z as leader key
 (define-prefix-command 'C-z-map)

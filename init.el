@@ -1,13 +1,29 @@
-;; elpaca 부트스트랩
+;; -*- lexical-binding: t; -*-
+
+;;; This file is generated from confiig.org file in this repository
+
+;;; --- Basic Configuration ---
+
+(setq inhibit-startup-message t)
+(tab-bar-mode 1)
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+(setq display-line-numbers-type 'relative)
+(add-hook 'prog-mode-hook #'display-line-numbers-mode)
+
+(setq scroll-margin 10)
+
+;;; --- Elpaca Bootstrap ---
 (defvar elpaca-installer-version 0.11)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
 (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
 (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-			      :ref nil :depth 1 :inherit ignore
-			      :files (:defaults "elpaca-test.el" (:exclude "extensions"))
-			      :build (:not elpaca--activate-package)))
-(let* ((repo (expand-file-name "elpaca/" elpaca-repos-directory))
+                              :ref nil :depth 1 :inherit ignore
+                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+                              :build (:not elpaca--activate-package)))
+(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
        (build (expand-file-name "elpaca/" elpaca-builds-directory))
        (order (cdr elpaca-order))
        (default-directory repo))
@@ -16,20 +32,20 @@
     (make-directory repo t)
     (when (<= emacs-major-version 28) (require 'subr-x))
     (condition-case-unless-debug err
-	(if-let* ((buffer (pop-to-buffer-same-window "*elpacr-bootstrap*"))
-		  ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
-						  ,@(when-let* ((depth (plist-get order :depth)))
-						      (list (format "--depth=%d" depth) "--no-single-branch"))
-						  ,(plist-get order :repo) ,repo))))
-		  ((zerop (call-process "git" nil buffer t "checkout"
-					(or (plist-get order :ref) "--"))))
-		  (emacs (concat invocation-directory invocation-name))
-		  ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-					"--eval" "(byte-recompile-directory \".\" 0 'force)")))
-		  ((require 'elpaca))
-		  ((elpaca-generate-autoloads "elpaca" repo)))
-	    (progn (message "%s" (buffer-string)) (kill-buffer buffer))
-	  (error "%s" (with-current-buffer buffer (buffer-string))))
+        (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+                  ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+                                                  ,@(when-let* ((depth (plist-get order :depth)))
+                                                      (list (format "--depth=%d" depth) "--no-single-branch"))
+                                                  ,(plist-get order :repo) ,repo))))
+                  ((zerop (call-process "git" nil buffer t "checkout"
+                                        (or (plist-get order :ref) "--"))))
+                  (emacs (concat invocation-directory invocation-name))
+                  ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                        "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+                  ((require 'elpaca))
+                  ((elpaca-generate-autoloads "elpaca" repo)))
+            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+          (error "%s" (with-current-buffer buffer (buffer-string))))
       ((error) (warn "%s" err) (delete-directory repo 'recursive))))
   (unless (require 'elpaca-autoloads nil t)
     (require 'elpaca)
@@ -38,25 +54,36 @@
 (add-hook 'after-init-hook #'elpaca-process-queues)
 (elpaca `(,@elpaca-order))
 
-;; use-package support
 (elpaca elpaca-use-package
   (elpaca-use-package-mode))
-(setq use-package-always-ensure t)
 
-;;; Elpaca Bootstrap done
+;; (setq use-package-always-ensure t)
 
-;; Maximize screen on startup
+(use-package catppuccin-theme
+  :ensure t
+  :config
+  (setq catppuccin-flavor 'macchiato)
+  (catppuccin-reload)
+  (load-theme 'catppuccin :no-confirm))
 
-(add-to-list 'load-path (expand-file-name "config" user-emacs-directory))
+(use-package evil
+  :demand t
+  :ensure t
+  :init
+  ;; Pre load configuration
+  (setq evil-want-integration t)
+  (setq evil-want-keybinding nil)
+  (setq evil-want-C-u-scroll t)
+  (setq evil-want-C-i-jump nil)
+  (setq evil-respect-visual-line-mode t)
+  :config
+  (evil-mode 1))
 
-(require 'colors)
-(require 'completion)
-(require 'keybinds)
-(require 'inputs)
-(require 'UIs)
-(require 'fonts)
-(require 'lang)
-(require 'orgs)
+(use-package transient
+  :ensure t)
+(use-package magit
+  :ensure t
+  :after transient)
 
 (use-package which-key
   :diminish
@@ -64,85 +91,108 @@
   :config
   (which-key-mode 1))
 
+;; auto pair
 (electric-pair-mode 1)
-
-(setenv "EDITOR" "emacs")
-(setenv "SSH_AUTH_SOCK" (concat (getenv "HOME") "/.bitwarden-ssh-agent.sock"))
 
 (recentf-mode 1)
 
-(setq treesit-language-source-alist
-      '((elisp "https://github.com/Wilfred/tree-sitter-elisp")
-	(html "https://github.com/tree-sitter/tree-sitter-html")
-	(nix "https://github.com/nix-community/tree-sitter-nix")
-	(css "https://github.com/tree-sitter/tree-sitter-css")))	
+(setq completion-ignore-caes t
+      read-file-name-completion-ignore-case t
+      read-buffer-completion-ignore-case t)
 
-(use-package treesit-auto
-  :ensure t
-  :custom
-  (treesit-auto-install 'prompt)
-  :config
-  (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode))
-
-(use-package transient :ensure t)
-(use-package magit :ensure t :after transient
-;;:bind
-;;("C-x g" . magit-status)
-;;:config
-)
-
-(use-package sudo-edit :ensure t)
-(use-package auto-sudoedit
-  :ensure t
-  :config
-  (auto-sudoedit-mode 1))
-
-(require 'tramp)
-(setq tramp-remote-path
-      '(tramp-own-remote-path
-	"/run/current-system/sw/bin"
-	"/usr/local/bin" "/usr/bin" "/bin"))
-(add-to-list 'tramp-remote-path "/run/current-system/sw/bin")
-(setq tramp-default-remote-shell "/run/current-system/sw/bin/bash")
-(setq tramp-shell-prompt-pattern "\\(?:^\\|\\)[^]#$%>\n]*#?[]#$%>] *\\(\\[[0-9;]*[a-zA-Z] *\\)*")
-
-(use-package vterm)
-
-;; fix clipboard not working in wsl with pgtk
-;; https://www.lukas-barth.net/blog/emacs-wsl-copy-clipboard/
-(setq select-active-regions nil)
-(setq select-enable-clipboard 't)
-(setq select-enable-primary nil)
-(setq interprogram-cut-function #'gui-select-text)
-
-;; ignore case for completing names
-(setq completion-ignore-case t)
-(setq read-file-name-completion-ignore-case t)
-(setq read-buffer-completion-ignore-case t)
-;; https://emacs.stackexchange.com/a/34
-(setq backup-directory-alist '(("." . "~/.emacs.d/Backups")))
-
-;; display relative line number in prog-mode
-(setq display-line-numbers-type 'relative)
-(add-hook 'prog-mode-hook #'display-line-numbers-mode)
-
-(setq visible-bell t)
 (savehist-mode 1)
+
 (save-place-mode 1)
 
-(setq custom-file (locate-user-emacs-file "custom-vars.el"))
-(load custom-file 'noerror 'nomessage)
-
 (global-auto-revert-mode 1)
-(setq global-auto-revert-non-file-buffers t)
-
-(use-package command-log-mode
-  :config
-  (global-command-log-mode))
+(setq global-auto-revert-non-file-buffers t) ;
 
 (use-package doom-modeline
   :ensure t
   :init
   (doom-modeline-mode 1))
 
+(use-package dashboard
+  :ensure t
+  :config
+  (dashboard-setup-startup-hook))
+
+(set-face-attribute 'default nil
+		    :height 150
+		    :family "JetBrainsMono Nerd Font")
+
+(setq default-input-method "korean-hangul")
+(set-language-environment "Korean")
+(global-set-key (kbd "<hangul>") 'toggle-input-method)
+
+(setq locale-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-selection-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(prefer-coding-system 'utf-8)
+
+(setenv "GTK_IM_MODULE" "fcitx")
+(setenv "QT_IM_MODULE" "fcitx")
+(setenv "XMODIFIERS" "@im=fcitx")
+
+(use-package org
+  :ensure t
+  :bind
+  (
+   :map org-mode-map
+   ("C-c <up>" . org-priority-up)
+   ("C-c <down>" . org-priority-down))
+  )
+
+(use-package org-super-agenda :ensure t)
+(use-package comment-tags :ensure t)
+
+(setq org-agenda-files '("~/org")) ; tell agenda where files are
+
+(setq org-log-done 'time) ; TODO
+(setq org-return-follows-link t) ; RET
+
+(add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
+(add-hook 'org-mode-hook 'org-indent-mode)
+
+(setq org-hide-emphasis-markers t)
+(add-hook 'org-mode-hook 'visual-line-mode)
+
+(setq org-capture-templates
+    '(
+	("j" "Work Log Entry"
+	 entry (file+datetree "~/org/work-log.org")
+	 "* %?"
+	 :empty-lines 0)
+	("n" "Note"
+	 entry (file+headline "~/org/notes.org" "Random notes")
+	 "** %?"
+	 :empty-lines 0)
+	("g" "General To-Do"
+	 entry (file+headline "~/org/todos.org" "General Tasks")
+	 "* TODO [#B] %?\n:Created: %T\n "
+	 :empty-lines 0)
+	))
+
+(setq org-todo-keywords
+      '((sequence 
+	 "TODO(t)"
+	 "PLANNING(p)"
+	 "IN-PROGRESS(i@/!)"
+	 "VERIFYING(v!)"
+	 "|"
+	 "DONE(d)"
+	 "OBE(o@!)"
+	 "WONT-DO(w@/!)")))
+
+(setq org-todo-keyword-faces
+      '(
+	("TODO" . (:foreground "GoldenRod" :weight bold))
+	("PLANNING" . (:foreground "DeepPink" :weight bold))
+	("IN-PROGRESS" . (:foreground "Cyan" :weight bold))
+	("VERIFYING" . (:foreground "DarkOrange" :weight bold))
+	("BLOCKED" . (:foreground "Red" :weight bold))
+	("DONE" . (:foreground "LimeGreen" :weight bold))
+	("OBE" . (:foreground "LimeGreen" :weight bold))
+	("WONT-DO" . (:foreground "LimeGreen" :weight bold)
+	 )))

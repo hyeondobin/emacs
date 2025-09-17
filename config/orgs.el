@@ -7,7 +7,9 @@
 	("C-c <down>" . org-priority-down)
 	;; When you want to change the level of an org item, use SMR
 	("C-c C-g C-r" . org-shiftmetaright)
-	))
+	)
+  :config
+  (add-to-list 'org-structure-template-alist '("se" . "src emacs-lisp\n")))
 
 
 ;; packages recommended by tutorial (https://github.com/james-stoup/emacs-org-mode-tutorial)
@@ -30,14 +32,10 @@
 ;; Make the indentation look nicer
 (add-hook 'org-mode-hook 'org-indent-mode)
 
-
-
 ;; Shortcuts for storing links, viewing the agenda, and starting a capture
 (define-key global-map "\C-cl" 'org-store-link)
 (define-key global-map "\C-ca" 'org-agenda)
 (define-key global-map "\C-cc" 'org-capture)
-
-
 
 ;; Hide the markers so you just see bold text as BOLD-TEXT and not *BOLD-TEXT*
 (setq org-hide-emphasis-markers t)
@@ -77,5 +75,7 @@
 	("OBE" . (:foreground "LimeGreen" :weight bold))
 	("WONT-DO" . (:foreground "LimeGreen" :weight bold))
 	))
+
+
 
 (provide 'orgs)

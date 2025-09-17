@@ -59,7 +59,7 @@
 (require 'orgs)
 
 (use-package which-key
-  :diminish t
+  :diminish
   :ensure t
   :config
   (which-key-mode 1))
@@ -126,3 +126,23 @@
 ;; display relative line number in prog-mode
 (setq display-line-numbers-type 'relative)
 (add-hook 'prog-mode-hook #'display-line-numbers-mode)
+
+(setq visible-bell t)
+(savehist-mode 1)
+(save-place-mode 1)
+
+(setq custom-file (locate-user-emacs-file "custom-vars.el"))
+(load custom-file 'noerror 'nomessage)
+
+(global-auto-revert-mode 1)
+(setq global-auto-revert-non-file-buffers t)
+
+(use-package command-log-mode
+  :config
+  (global-command-log-mode))
+
+(use-package doom-modeline
+  :ensure t
+  :init
+  (doom-modeline-mode 1))
+

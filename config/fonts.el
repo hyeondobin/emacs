@@ -29,7 +29,7 @@
 (add-to-list 'face-font-rescale-alist '(".*D2Coding.*" . 1.23))
 (add-to-list 'face-font-rescale-alist '(".*NanumGothic.*" . 1.25))
 
-(setq-default line-spacing 4)
+(setq-default line-spacing 5)
 
 (provide 'fonts)
 ;; | 1564 |

@@ -91,7 +91,7 @@
  #+end_src
 
 * EVIL Mode
-
+emacs에서 vim의 단축키를 사용할 수 있게 해주는 패키지. 설정을 잘 하면 꽤 편하게 사용할 수 있지만 현재 단계에서는 모드가 켜졌다가 꺼졌다가를 반복해서 아직은 잘못 누르는 실수를 할 때가 많다. =Evil Collection= 을 사용하면 간단하게 많은 패키지에 대한 단축키 설정을 할 수 있지만 확실한 필요성을 아직은 잘 모르겠어서 일단은 보류하고 있다. 
 #+begin_src emacs-lisp :tangle init.el
   (use-package evil
     :demand t

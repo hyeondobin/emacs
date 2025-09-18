@@ -80,6 +80,9 @@
   (evil-set-initial-state 'dashboard-mode 'insert)
   (evil-mode 1))
 
+(use-package evil-numbers
+  :ensure t)
+
 (use-package corfu
   :ensure t
   :custom
@@ -136,9 +139,19 @@
   :ensure t
   :custom
   (completion-styles '(orderless basic))
-  (completion-category-overrides '((file (styles partial-completion))))
   (completion-category-defaults nil)
-  (completion-pcm-leading-wildcard t))
+  (completion-pcm-leading-wildcard t)
+  :config
+  (orderless-define-completion-style dh/orderless-flex
+    (orderless-matching-styles '(orderless-flex
+				 orderless-literal
+				 orderless-regexp)))
+  (setq completion-category-overrides '(
+					(command (styles dh/orderless-flex))
+					(symbol (styles dh/orderless-flex))
+					(variable (styles dh/orderless-flex))
+					(file (styles partial-completion))))
+  )
 
 (use-package consult
   :ensure t

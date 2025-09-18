@@ -108,6 +108,15 @@
     (evil-mode 1))
 #+end_src
 
+** Evil numbers
+Make =C-a= and =C-x= work like vim.
+
+#+begin_src emacs-lisp :tangle init.el
+  (use-package evil-numbers
+    :ensure t)
+#+end_src
+
+
 * Completion system
 ** Corfu
 In-buffer completion
@@ -181,9 +190,18 @@ not sure what this provides. Research needed
     :ensure t
     :custom
     (completion-styles '(orderless basic))
-    (completion-category-overrides '((file (styles partial-completion))))
     (completion-category-defaults nil)
-    (completion-pcm-leading-wildcard t))
+    (completion-pcm-leading-wildcard t)
+    :config
+    (orderless-define-completion-style dh/orderless-flex
+      (orderless-matching-styles '(orderless-flex
+  				 orderless-literal
+  				 orderless-regexp)))
+    (setq completion-category-overrides '(
+  					(command (styles dh/orderless-flex))
+  					(symbol (styles dh/orderless-flex))
+  					(variable (styles dh/orderless-flex))
+  					(file (styles partial-completion)))))
 #+end_src
 
 ** Consult

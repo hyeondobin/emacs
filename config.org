@@ -104,6 +104,7 @@
     (setq evil-want-C-i-jump nil)
     (setq evil-respect-visual-line-mode t)
     :config
+    (evil-set-initial-state 'dashboard-mode 'insert)
     (evil-mode 1))
 #+end_src
 

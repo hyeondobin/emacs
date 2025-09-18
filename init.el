@@ -77,7 +77,8 @@
   (setq evil-want-C-i-jump nil)
   (setq evil-respect-visual-line-mode t)
   :config
-  (evil-set-initial-state 'dashboard-mode 'insert)
+  (evil-set-initial-state 'dashboard-mode 'emacs)
+  (evil-set-initial-state 'elpaca-log-mode 'emacs)
   (evil-mode 1))
 
 (use-package evil-numbers
@@ -150,8 +151,7 @@
 					(command (styles dh/orderless-flex))
 					(symbol (styles dh/orderless-flex))
 					(variable (styles dh/orderless-flex))
-					(file (styles partial-completion))))
-  )
+					(file (styles partial-completion)))))
 
 (use-package consult
   :ensure t

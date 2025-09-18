@@ -79,7 +79,15 @@
   :config
   (evil-set-initial-state 'dashboard-mode 'emacs)
   (evil-set-initial-state 'elpaca-log-mode 'emacs)
-  (evil-mode 1))
+  (evil-mode 1)
+  (evil-global-set-key 'insert "<hangul>" 'toggle-input-method)
+  )
+
+(use-package evil-collection
+  :ensure t
+  :after (evil)
+  :config
+  (evil-collection-init))
 
 (use-package evil-numbers
   :ensure t)

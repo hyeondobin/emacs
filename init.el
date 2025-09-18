@@ -77,7 +77,76 @@
   (setq evil-want-C-i-jump nil)
   (setq evil-respect-visual-line-mode t)
   :config
+  (evil-set-initial-state 'dashboard-mode 'insert)
   (evil-mode 1))
+
+(use-package corfu
+  :ensure t
+  :custom
+  (corfu-cycle t)
+  (corfu-preview-current t)
+  (corfu-preselect 'prompt)
+  (corfu-auto t)
+  (corfu-quit-no-match 'separator)
+  (completion-at-point-functions
+	(list (
+	       cape-capf-debug #'cape-dict)))
+  :init
+  (global-corfu-mode)
+  )
+
+(use-package vertico
+  :ensure t
+  :init
+  (vertico-mode)
+  ;(vertico-multiform-mode)
+  :custom
+  (vertico-count 20)
+  (vertico-resize t)
+  (vertico-cycle t)
+  ;; (vertico-multiform-commands
+  ;;  '((consult-imenu buffer indexed)
+  ;;    (execute-extended-command unobtrusive)))
+  ;; (vertico-multiform-categories
+  ;;  '((file grid)
+  ;;    (consult-grep buffer)))
+  )
+
+(use-package emacs
+  :custom
+  ;; (context-menu-mode t)
+  ;; (enable-recursive-minibuffers t)
+  (read-extended-command-predicate #'command-completion-default-include-p)
+  ;; (minibuffer-prompt-properties
+   ;; '(read-only t cursor-intangible t face minibuffer-prompt))
+  ;; (text-mode-ispell-word-completion nil)
+  )
+
+(use-package cape
+  :ensure t
+  :bind ("C-c p" . cape-prefix-map)
+  :init
+  (add-hook 'completion-at-point-functions #'cape-dabbrev)
+  (add-hook 'completion-at-point-functions #'cape-file)
+  (add-hook 'completion-at-point-functions #'cape-elisp-block)
+  (add-hook 'completion-at-point-functions #'cape-history)
+  )
+
+(use-package orderless
+  :ensure t
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles partial-completion))))
+  (completion-category-defaults nil)
+  (completion-pcm-leading-wildcard t))
+
+(use-package consult
+  :ensure t
+  :hook (completion-list-mode . consult-preview-at-point-mode)
+  :config
+  (consult-customize
+   consult-theme :preview-key '(:debounce 0.2 any)
+   consult-ripgrep consult-git-grep consult-grep consult-man consult-bookmark consult-recent-file consult-xref consult--source-bookmark consult--source-file-register consult--source-recent-file consult--source-project-recent-file :preview-key '(:debounce 0.4 any)))
 
 (use-package transient
   :ensure t)
@@ -93,14 +162,12 @@
 
 ;; auto pair
 (electric-pair-mode 1)
-
+(savehist-mode 1)
 (recentf-mode 1)
 
 (setq completion-ignore-caes t
       read-file-name-completion-ignore-case t
       read-buffer-completion-ignore-case t)
-
-(savehist-mode 1)
 
 (save-place-mode 1)
 

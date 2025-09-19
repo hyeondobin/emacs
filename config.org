@@ -4,8 +4,7 @@
 * Dobin's Emacs Configuration
 
 * Basic UI Configs
-기본적인 UI관련 설정들을 한다.
-프로그래밍 관련된 모드에서는 line number를 켜서 활용한다. 
+
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
   ;; -*- lexical-binding: t; -*-
@@ -70,9 +69,7 @@
   (add-hook 'after-init-hook #'elpaca-process-queues)
   (elpaca `(,@elpaca-order))
 #+end_src
-** use-package 지원 활성화
-elpaca가 use-package 구문을 감지하고 자동으로 패키지를 관리하게 하는 기능이다.
-=use-package-always-ensure= 기능은 사용하지 않고 직접 추가하기로 했다.
+** use-package 
 
 #+begin_src emacs-lisp :tangle init.el
   (elpaca elpaca-use-package
@@ -82,15 +79,13 @@ elpaca가 use-package 구문을 감지하고 자동으로 패키지를 관리하
   
 #+end_src
 
-** Configuring early init
+* Configuring early init
 Elpaca를 사용하기 위해 설정해야 하는 옵션을 설정해준다. 
-
 #+begin_src emacs-lisp :tangle early-init.el
   (setq package-enable-at-startup nil)
 #+end_src
 
 * Theme
-Catppuccin의 macchiato를 사용한다.
 
  #+begin_src emacs-lisp :tangle init.el
    (use-package catppuccin-theme
@@ -102,10 +97,7 @@ Catppuccin의 macchiato를 사용한다.
  #+end_src
 
 * EVIL Mode
-emacs에서 vim의 단축키를 사용할 수 있게 해주는 패키지.
-한동안 기본 emacs의 키 설정을 사용해보았고 충분히 유용하게 사용하고 있었다. 하지만 vim을 사용하면서 했던 다양한 수정 방법이 기본적으로 가능한 경우가 잘 없었고 할 수 있다고 하더라고 결국 몇 가지 함수를 섞어서 사용하거나 새로운 함수를 만들어야 하는 경우가 많았다(아니면 패키지가 별도로 필요한 경우). 그래서 evil-mode를 사용하기로 결정했다.
-
-=Evil Collection= 을 사용하면 간단하게 많은 패키지에 대한 단축키 설정을 할 수 있다.
+emacs에서 vim의 단축키를 사용할 수 있게 해주는 패키지. 설정을 잘 하면 꽤 편하게 사용할 수 있지만 현재 단계에서는 모드가 켜졌다가 꺼졌다가를 반복해서 아직은 잘못 누르는 실수를 할 때가 많다. =Evil Collection= 을 사용하면 간단하게 많은 패키지에 대한 단축키 설정을 할 수 있지만 확실한 필요성을 아직은 잘 모르겠어서 일단은 보류하고 있다. 
 #+begin_src emacs-lisp :tangle init.el
   (use-package evil
     :demand t
@@ -117,6 +109,7 @@ emacs에서 vim의 단축키를 사용할 수 있게 해주는 패키지.
     (setq evil-want-C-u-scroll t)
     (setq evil-want-C-i-jump nil)
     (setq evil-respect-visual-line-mode t)
+    (setq evil-undo-system 'undo-redo)
     :config
     (evil-set-initial-state 'dashboard-mode 'emacs)
     (evil-set-initial-state 'elpaca-log-mode 'emacs)
@@ -139,6 +132,8 @@ Make =C-a= and =C-x= work like vim.
     :ensure t)
 #+end_src
 
+* General
+General은 evil-mode의 leader-key 기능을 편하게 사용하기 위해 사용하는 패키지이다. 
 
 * Completion system
 ** Corfu

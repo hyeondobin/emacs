@@ -76,6 +76,7 @@
   (setq evil-want-C-u-scroll t)
   (setq evil-want-C-i-jump nil)
   (setq evil-respect-visual-line-mode t)
+  (setq evil-undo-system 'undo-redo)
   :config
   (evil-set-initial-state 'dashboard-mode 'emacs)
   (evil-set-initial-state 'elpaca-log-mode 'emacs)

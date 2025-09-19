@@ -1,5 +1,5 @@
 #+TITLE: Emacs Configuration
-#+PROPERTY: header-args :mkdiirp yes
+#+PROPERTY: header-args :mkdirp yes
 
 * Dobin's Emacs Configuration
 

@@ -1,12 +1,13 @@
-#+TITLE: Emacs Configuration
-#+PROPERTY: header-args :mkdirp yes
+#+TITLE: My Emacs Configuration
+#+PROPERTY: header-args :mkdirp yes :noweb yes :tangle init.el :tangle-mode: #o444 :results silent
+#+startup: indent
 
 * Dobin's Emacs Configuration
-
+=Emacs= 설정 파일이다.
 * Basic UI Configs
 
 
-#+BEGIN_SRC emacs-lisp :tangle init.el
+#+BEGIN_SRC emacs-lisp 
   ;; -*- lexical-binding: t; -*-
 
   ;;; This file is generated from confiig.org file in this repository
@@ -20,15 +21,15 @@
   (scroll-bar-mode -1)
   (setq display-line-numbers-type 'relative)
   (add-hook 'prog-mode-hook #'display-line-numbers-mode)
+  (add-hook 'org-mode-hook #'display-line-numbers-mode)
+  (setq ring-bell-function #'ignore)
 
   (setq scroll-margin 10)
 #+END_SRC
 
 * Package Manager
-
-
 ** Elpaca BootStrap
-#+begin_src emacs-lisp :tangle init.el
+#+begin_src emacs-lisp 
   ;;; --- Elpaca Bootstrap ---
   (defvar elpaca-installer-version 0.11)
   (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
@@ -71,7 +72,7 @@
 #+end_src
 ** use-package 
 
-#+begin_src emacs-lisp :tangle init.el
+#+begin_src emacs-lisp 
   (elpaca elpaca-use-package
     (elpaca-use-package-mode))
 
@@ -87,7 +88,7 @@ Elpaca를 사용하기 위해 설정해야 하는 옵션을 설정해준다.
 
 * Theme
 
- #+begin_src emacs-lisp :tangle init.el
+ #+begin_src emacs-lisp 
    (use-package catppuccin-theme
      :ensure t
      :config
@@ -96,9 +97,183 @@ Elpaca를 사용하기 위해 설정해야 하는 옵션을 설정해준다.
      (load-theme 'catppuccin :no-confirm))
  #+end_src
 
+* General
+General은 evil-mode의 leader-key 기능을 편하게 사용하기 위해 사용하고 있는 패키지이다. 
+#+begin_src emacs-lisp 
+  (use-package general
+    :ensure (:wait t)
+    :demand t
+    :config
+    (general-override-mode)
+    (general-auto-unbind-keys)
+    ;; (general-evil-setup)
+    <<general-config>>)
+#+end_src
+
+** Config
+:PROPERTIES:
+:header-args: :noweb-ref general-config
+:END:
+Leader key로 ~,~ 를 사용한다.
+
+dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해준다.
+ #+begin_src emacs-lisp 
+   (general-define-key
+    :keymaps 'override
+    :states '(insert normal hybrid motion visual operator emacs)
+    :prefix-map '+prefix-map
+    :prefix-command '+prefix-map
+    :prefix ","
+    :global-prefix "M-,")
+
+   (general-create-definer dh-global-def
+     :wk-full-keys nil
+     :keymaps '+prefix-map)
+#+end_src
+
+ #+begin_src emacs-lisp 
+   (dh-global-def
+    "SPC" 'execute-extended-command
+    "h" (general-simulate-key "C-h" :which-key "help")
+    "!" 'shell-command
+    ":" 'eval-expression
+    "." 'repeat
+    "z" '((lambda (local) (interactive "p")
+   	 (unless repeat-mode (repeat-mode))
+   	 (let ((local current-prefix-arg)
+   	       (current-prefix-arg nil))
+   	   (call-interactively (if local #'text-scale-adjust #'global-text-scale-adjust))))
+          :which-key "Zoom")
+    "?" 'which-key-show-top-level
+    )
+#+end_src
+
+=dh-global-leader= 는 major mode별로 단축키들을 설정하는 데 사용한다.
+
+#+begin_src emacs-lisp 
+   (general-create-definer dh-global-leader
+     :keymaps 'override
+     :states '(insert normal hybrid motion virual operator)
+     :prefix ", m"
+     :non-normal-prefix "M-, m"
+     "" '(:ignore t
+          :which-key
+          (lambda (arg)
+   	 (cons (cadr (split-string (car arg) " "))
+   	       (replace-regexp-in-string "-mode$" "" (symbol-name major-mode)))))
+     )
+#+end_src
+
+하위 메뉴 단축키들을 쉽게 설정할 수 있게 매크로를 선언한다. 
+#+begin_src emacs-lisp 
+   (defmacro +general-global-menu! (name prefix-key &rest body)
+     "Create a definer named +general-global-NAME wrapping dh-global-def.
+     Create prefix map: +general-global-NAME-map. Prefix bindings in BODY with PREFIX-KEY."
+     (declare (indent 2))
+     (let* ((n (concat "+general-global-" name))
+   	 (prefix-map (intern (concat n "-map"))))
+       `(progn
+          (general-create-definer ,(intern n)
+   	 :wrapping dh-global-def
+   	 :prefix-map (quote ,prefix-map)
+   	 :prefix ,prefix-key
+   	 :wk-full-keys nil
+   	 "" '(:ignore t :which-key ,name))
+          (,(intern n) ,@body)))
+     )
+#+end_src
+
+application
+#+begin_src emacs-lisp 
+  (+general-global-menu! "application" "a"
+    "p" '(:ignore t "elpaca")
+    "pb" 'elpaca-browse
+    "pr" '(
+  	 (lambda () (interactive)
+  	   (let ((current-prefix-arg (not current-prefix-arg))
+  		 (this-command 'elpaca-rebuild))
+  	     (call-interactively #'elpaca-rebuild)))
+  	 :which-key "rebuild")
+    "pm" 'elpaca-manager
+    "pl" 'elpaca-log
+    "pi" 'elpaca-info
+    "pI" '((lambda () (interactive) (info "Elpaca"))
+  	 :which-key "elpaca-info")
+    "ps" 'elpaca-status
+    "pt" 'elpaca-try
+    "pv" 'elpaca-visit
+    )
+#+end_src
+
+buffers
+#+begin_src emacs-lisp 
+  (+general-global-menu! "buffer" "b"
+    "d" 'kill-current-buffer
+    "i" 'consult-buffer
+    "o" '((lambda () (interactive) (switch-to-buffer nil))
+  	:which-key "other-buffer")
+    "p" 'previous-buffer
+    "r" 'rename-buffer
+    "R" 'revert-buffer
+    "M" '((lambda () (interactive) (switch-to-buffer "*Messages*"))
+  	:which-key "messages-buffer")
+    "n" 'next-buffer
+    "s" 'scratch-buffer
+    "TAB" '((lambda () (interactive) (switch-to-buffer nil))
+  	  :whick-key "other-buffer")
+    )
+#+end_src
+
+bookmarks
+
+#+begin_src emacs-lisp 
+  (+general-global-menu! "bookmark" "B")
+#+end_src
+
+eval
+#+begin_src emacs-lisp 
+  (+general-global-menu! "eval" "e"
+    "b" 'eval-buffer
+    "d" 'eval-defun
+    "e" 'eval-expression
+    "p" 'pp-eval-last-sexp ; pp = pretty print
+    "s" 'eval-last-sexp)
+#+end_src
+
+files
+#+begin_src emacs-lisp 
+  (+general-global-menu! "file" "f"
+    "d" '((lambda (&optional arg) (interactive "P")
+  	  (let ((buffer (when arg (current-buffer))))
+  	    (diff-buffer-with-file buffer)))
+  	:which-key "diff-with-file")
+    "e" '(:ignore t :which-key "edit")
+    "ec" '((lambda () (interactive) (find-file "~/.emacs.d/config.org"))
+  	:which-key "Open Emacs Config")
+    "ed" '((lambda () (interactive) (find-file-existing literate-file)(widen))
+  	 :which-key "dotfile")
+    "f" 'find-file
+    "p" 'find-function-at-point
+    "P" 'find-function
+    "r" 'consult-recent-file
+    "R" 'rename-file-and-buffer
+    "s" 'save-buffer
+    "v" 'find-variable-at-point
+    "V" 'find-variable
+    )
+  #+end_src
+
+Quit with options
+#+begin_src emacs-lisp 
+  (dh-global-def
+    "q" '(:ignore t :which-key "quit")
+    "qr" 'restart-emacs
+    "qs" 'save-buffers-kill-terminal
+    )
+ #+end_src
 * EVIL Mode
-emacs에서 vim의 단축키를 사용할 수 있게 해주는 패키지. 설정을 잘 하면 꽤 편하게 사용할 수 있지만 현재 단계에서는 모드가 켜졌다가 꺼졌다가를 반복해서 아직은 잘못 누르는 실수를 할 때가 많다. =Evil Collection= 을 사용하면 간단하게 많은 패키지에 대한 단축키 설정을 할 수 있지만 확실한 필요성을 아직은 잘 모르겠어서 일단은 보류하고 있다. 
-#+begin_src emacs-lisp :tangle init.el
+emacs에서 vim의 단축키를 사용할 수 있게 해주는 패키지. 설정을 잘 하면 꽤 편하게 사용할 수 있지만 현재 단계에서는 모드가 켜졌다가 꺼졌다가를 반복해서 아직은 잘못 누르는 실수를 할 때가 많다. 
+#+begin_src emacs-lisp 
   (use-package evil
     :demand t
     :ensure t
@@ -107,16 +282,38 @@ emacs에서 vim의 단축키를 사용할 수 있게 해주는 패키지. 설정
     (setq evil-want-integration t)
     (setq evil-want-keybinding nil)
     (setq evil-want-C-u-scroll t)
-    (setq evil-want-C-i-jump nil)
+    (unless (display-graphic-p)
+      (setq evil-want-C-i-jump nil))
     (setq evil-respect-visual-line-mode t)
     (setq evil-undo-system 'undo-redo)
     :config
     (evil-set-initial-state 'dashboard-mode 'emacs)
     (evil-set-initial-state 'elpaca-log-mode 'emacs)
     (evil-mode 1)
-    (evil-global-set-key 'insert "<hangul>" 'toggle-input-method)
+    (when (fboundp #'general-define-key)
+      (general-define-key
+       :states '(motion)))
+    ;; (evil-global-set-key 'insert (kbd<hangul>) 'toggle-input-method)
     )
+#+end_src
 
+#+begin_src emacs-lisp 
+  (use-package evil-surround
+    :ensure t
+    :after evil
+    :config
+    (global-evil-surround-mode 1))
+#+end_src
+
+#+begin_src emacs-lisp 
+  (use-package evil-commentary
+    :ensure t
+    :after evil
+    :config
+    (evil-commentary-mode))
+#+end_src
+=Evil Collection= 을 사용하면 간단하게 많은 패키지에 대한 단축키 설정을 할 수 있지만 확실한 필요성을 아직은 잘 모르겠어서 일단은 보류하고 있다. 
+#+begin_src emacs-lisp 
   (use-package evil-collection
     :ensure t
     :after (evil)
@@ -127,18 +324,20 @@ emacs에서 vim의 단축키를 사용할 수 있게 해주는 패키지. 설정
 ** Evil numbers
 Make =C-a= and =C-x= work like vim.
 
-#+begin_src emacs-lisp :tangle init.el
+#+begin_src emacs-lisp 
   (use-package evil-numbers
-    :ensure t)
+    :ensure t
+    :after (general)
+    :init
+    (general-define-key :states '(normal)
+     "C-a" 'evil-numbers/inc-at-pt
+     "C-s" 'evil-numbers/dec-at-pt))
 #+end_src
-
-* General
-General은 evil-mode의 leader-key 기능을 편하게 사용하기 위해 사용하는 패키지이다. 
 
 * Completion system
 ** Corfu
 In-buffer completion
-#+begin_src emacs-lisp :tangle init.el
+#+begin_src emacs-lisp 
   (use-package corfu
     :ensure t
     :custom
@@ -152,11 +351,14 @@ In-buffer completion
   	       cape-capf-debug #'cape-dict)))
     :init
     (global-corfu-mode)
+    :bind (
+  	 :map corfu-map
+  	      (""))
     )
 #+end_src
 ** Vertico
 Minibuffer completion
-#+begin_src emacs-lisp :tangle init.el
+#+begin_src emacs-lisp 
   (use-package vertico
     :ensure t
     :init
@@ -176,7 +378,7 @@ Minibuffer completion
 
   #+end_src
 
-#+begin_src emacs-lisp :tangle init.el
+#+begin_src emacs-lisp 
   (use-package emacs
     :custom
     ;; (context-menu-mode t)
@@ -185,13 +387,14 @@ Minibuffer completion
     ;; (minibuffer-prompt-properties
      ;; '(read-only t cursor-intangible t face minibuffer-prompt))
     ;; (text-mode-ispell-word-completion nil)
+
     )
 #+end_src
 
 ** Cape
 customize dabbrev with Cape package
 not sure what this provides. Research needed
-#+begin_src emacs-lisp :tangle init.el
+#+begin_src emacs-lisp 
   (use-package cape
     :ensure t
     :bind ("C-c p" . cape-prefix-map)
@@ -203,7 +406,7 @@ not sure what this provides. Research needed
     )
 #+end_src
 ** Orderless
-#+begin_src emacs-lisp :tangle init.el
+#+begin_src emacs-lisp 
   (use-package orderless
     :ensure t
     :custom
@@ -223,7 +426,7 @@ not sure what this provides. Research needed
 #+end_src
 
 ** Consult
-#+begin_src emacs-lisp :tangle init.el
+#+begin_src emacs-lisp 
   (use-package consult
     :ensure t
     :hook (completion-list-mode . consult-preview-at-point-mode)
@@ -233,7 +436,7 @@ not sure what this provides. Research needed
      consult-ripgrep consult-git-grep consult-grep consult-man consult-bookmark consult-recent-file consult-xref consult--source-bookmark consult--source-file-register consult--source-recent-file consult--source-project-recent-file :preview-key '(:debounce 0.4 any)))
 #+end_src
 * Magit
-#+begin_src emacs-lisp :tangle init.el
+#+begin_src emacs-lisp 
   (use-package transient
     :ensure t)
   (use-package magit
@@ -242,7 +445,7 @@ not sure what this provides. Research needed
 #+end_src
 * Which-key
 
-#+begin_src emacs-lisp :tangle init.el
+#+begin_src emacs-lisp 
   (use-package which-key
     :diminish
     :ensure t
@@ -252,7 +455,7 @@ not sure what this provides. Research needed
 
 * Util
 
-#+begin_src emacs-lisp :tangle init.el
+#+begin_src emacs-lisp 
   ;; auto pair
   (electric-pair-mode 1)
   (savehist-mode 1)
@@ -270,7 +473,7 @@ not sure what this provides. Research needed
 
 * Modeline
  doom modeline
- #+begin_src emacs-lisp :tangle init.el
+ #+begin_src emacs-lisp
    (use-package doom-modeline
      :ensure t
      :init
@@ -279,18 +482,18 @@ not sure what this provides. Research needed
 
 * Dashboard
 
-#+begin_src emacs-lisp :tangle init.el
+#+begin_src emacs-lisp 
   (use-package dashboard
     :ensure t
     :config
     (dashboard-setup-startup-hook))
 #+end_src
 
-* Keybinds
+* Desktop save mode
 
- #+begin_src emacs-lisp
-
- #+end_src
+#+begin_src emacs-lisp
+  (desktop-save-mode 1)
+#+end_src
 
 * Fonts
 JetBrains Mono Nerd Font
@@ -298,14 +501,14 @@ JetBrains Mono Nerd Font
 =C-u C-x == 
 
 
-#+begin_src emacs-lisp :tangle init.el
+#+begin_src emacs-lisp 
   (set-face-attribute 'default nil
   		    :height 150
   		    :family "JetBrainsMono Nerd Font")
 #+end_src
 
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (defvar dh/kor-font
     (font-spec
      :family "D2CodingLigature Nerd Font"
@@ -321,13 +524,13 @@ JetBrains Mono Nerd Font
   (setq-default line-spacing 5) ; 
 #+end_src
 
-#+begin_src emacs-lisp :tangle init.el
+#+begin_src emacs-lisp 
   (setq default-input-method "korean-hangul")
   (set-language-environment "Korean")
   (global-set-key (kbd "<hangul>") 'toggle-input-method)
 #+end_src
 
-#+begin_src emacs-lisp :tangle init.el
+#+begin_src emacs-lisp 
   (setq locale-coding-system 'utf-8)
   (set-keyboard-coding-system 'utf-8)
   (set-selection-coding-system 'utf-8)
@@ -335,7 +538,7 @@ JetBrains Mono Nerd Font
   (prefer-coding-system 'utf-8)
 #+end_src
 
-#+begin_src emacs-lisp :tangle init.el
+#+begin_src emacs-lisp 
   (setenv "GTK_IM_MODULE" "fcitx")
   (setenv "QT_IM_MODULE" "fcitx")
   (setenv "XMODIFIERS" "@im=fcitx")
@@ -343,19 +546,55 @@ JetBrains Mono Nerd Font
 
 * Org mode
 Org mode
-#+begin_src emacs-lisp :tangle init.el
+#+begin_src emacs-lisp 
   (use-package org
     :ensure t
     :bind
-    (
-     :map org-mode-map
+    (:map org-mode-map
      ("C-c <up>" . org-priority-up)
      ("C-c <down>" . org-priority-down))
+    :config
+    <<org-keybinds>>
+    (dh-global-leader
+      :keymaps '(org-src-mode-map lisp-mode-shared-map)
+      "'" 'org-edit-src-exit
+      "k" 'org-edit-src-abort
+      )
+    <<org-config>>)
+#+end_src
+
+** keybinds
+:PROPERTIES:
+:header-args: :noweb-ref org-keybinds
+:END:
+#+begin_src emacs-lisp
+  (dh-global-leader
+    :keymaps '(org-mode-map)
+    "'" '(org-edit-special
+  	:which-key "edit code block")
+    "b" '(:ignore t :which-key "Babel")
+    "bt" 'org-babel-tangle
+    "c" 'org-capture
+    "h" 'consult-org-heading
+    "s" '(:ignore t :which-key "Src")
+    "st" 'org-insert-structure-template
     )
 #+end_src
 
+** structure templates
+:PROPERTIES:
+:header-args: :noweb-ref org-config
+:END:
 
-#+begin_src emacs-lisp :tangle init.el
+#+begin_src emacs-lisp 
+  (with-eval-after-load 'org
+    (add-to-list 'org-structure-template-alist
+  	       '("se" . "src emacs-lisp\n")))
+
+#+end_src
+
+** configs
+#+begin_src emacs-lisp 
   (use-package org-super-agenda :ensure t)
   (use-package comment-tags :ensure t)
 
@@ -373,7 +612,7 @@ Org mode
 
 ** Org Capture templates
 
-#+begin_src emacs-lisp :tangle init.el
+#+begin_src emacs-lisp 
   (setq org-capture-templates
       '(
 	("j" "Work Log Entry"
@@ -394,7 +633,7 @@ Org mode
 ** ToDo States
 todos of org can have states and the state can be changed with function.
 First, set the states of the TODO
-#+begin_src emacs-lisp :tangle init.el
+#+begin_src emacs-lisp 
   (setq org-todo-keywords
         '((sequence 
   	 "TODO(t)"
@@ -408,7 +647,7 @@ First, set the states of the TODO
 #+end_src
 
 Also, set colors for the todos, too.
-#+begin_src emacs-lisp :tangle init.el
+#+begin_src emacs-lisp 
   (setq org-todo-keyword-faces
         '(
   	("TODO" . (:foreground "GoldenRod" :weight bold))

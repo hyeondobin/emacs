@@ -1,4 +1,4 @@
-#+TITLE: My Emacs Configuration
+#+Title: My Emacs Configuration
 #+PROPERTY: header-args :mkdirp yes :noweb yes :tangle init.el :tangle-mode: #o444 :results silent
 #+startup: indent
 
@@ -176,26 +176,25 @@ dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해
 
 하위 메뉴 단축키들을 쉽게 설정할 수 있게 매크로를 선언한다. 
 #+begin_src emacs-lisp :lexical t 
-   (defmacro +general-global-menu! (name prefix-key &rest body)
-     "Create a definer named +general-global-NAME wrapping dh-global-def.
+(defmacro +general-global-menu! (name prefix-key &rest body)
+  "Create a definer named +general-global-NAME wrapping dh-global-def.
      Create prefix map: +general-global-NAME-map. Prefix bindings in BODY with PREFIX-KEY."
-     (declare (indent 2))
-     (let* ((n (concat "+general-global-" name))
-   	 (prefix-map (intern (concat n "-map"))))
-       `(progn
-          (general-create-definer ,(intern n)
-   	 :wrapping dh-global-def
-   	 :prefix-map (quote ,prefix-map)
-   	 :prefix ,prefix-key
-   	 :wk-full-keys nil
-   	 "" '(:ignore t :which-key ,name))
-          (,(intern n) ,@body)))
-     )
+  (declare (indent 2))
+  (let* ((n (concat "+general-global-" name))
+         (prefix-map (intern (concat n "-map"))))
+    `(progn
+       (general-create-definer ,(intern n)
+         :wrapping dh-global-def
+         :prefix-map (quote ,prefix-map)
+         :prefix ,prefix-key
+         :wk-full-keys nil
+         "" '(:ignore t :which-key ,name))
+       (,(intern n) ,@body))))
 #+end_src
 
 *** Application
-#+begin_src emacs-lisp :lexical t 
-  (+general-global-menu! "application" "a"
+#+begin_src emacs-lisp :lexical t
+(+general-global-menu! "application" "a"
     "p" '(:ignore t "elpaca")
     "pb" 'elpaca-browse
     "pr" '(
@@ -246,6 +245,7 @@ dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해
     "d" 'eval-defun
     "e" 'eval-expression
     "p" 'pp-eval-last-sexp ; pp = pretty print
+    "r" 'eval-region
     "s" 'eval-last-sexp)
 #+end_src
 
@@ -291,7 +291,7 @@ dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해
 
 *** Git version-control
 #+begin_src emacs-lisp :lexical t
-  (+general-global-menu! "git/version-control" "g")
+(+general-global-menu! "git/version-control" "g")
 #+end_src
 
 *** Links
@@ -391,8 +391,12 @@ dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해
 #+end_src
 
 *** Vim completion
+:PROPERTIES:
+:header-args: :tangle no
+:END:
+
 안 쓸 거 같지만 일단 참고용.
-#+begin_src emacs-lisp :lexical t :tangle no
+#+begin_src emacs-lisp :tangle no 
   ;; vim like completion
   (general-create-definer completion-def
     :prefix "C-x")
@@ -711,7 +715,7 @@ not sure what this provides. Research needed
   (use-feature dictionary
     :defer t
     :general
-    (dh-global-def"W" 'dictionary-lookup-definition)
+    (dh-global-def "W" 'dictionary-lookup-definition)
     (+general-global-application "D" 'dictionary-search)
     (+general-global-text "d" 'dictionary-search)
     :custom
@@ -781,6 +785,7 @@ not sure what this provides. Research needed
       "ed" 'eval-defun
       "ee" 'eval-expression
       "ep" 'pp-eval-last-sexp
+      "er" 'eval-region
       "es" 'eval-last-sexp
       "i" 'elisp-index-search))
 #+end_src
@@ -1054,7 +1059,7 @@ command 설명 추가해주는 패키지
     :init
     (setq which-key-enable-extended-define-key t)
     :custom
-    (which-key-side-window-location 'bottom)
+    (which-key-side-window-location 'right)
     (which-key-sort-order 'which-key-key-order-alpha)
     (which-key-side-window-max-width 0.33)
     (which-key-idle-delay 0.2)
@@ -1158,12 +1163,12 @@ Org mode
     :general
     (+general-global-application
       "o" '(:ignore t :which-key "org")
-      "oc" 'org-capture
-      "oC" '+org-capture-again
-      "oi" 'org-insert-link
+      "oc" '(org-capture :which-key "capture")
+      "oC" '(+org-capture-again :which-key "capture again")
+      "oi" '(org-insert-link :which-key "insert link")
       "ok" '(:ignore t :which-key "clock")
-      "okg" 'org-clock-goto
-      "oki" 'org-clock-in-last
+      "okg" '(org-clock-goto :which-key "clock-goto")
+      "oki" '(org-clock-in-last :which-key "clock-in-last")
       "okj" 'org-clock-jump-to-current-clock
       "oko" 'org-clock-out
       "okr" 'org-resolve-clocks
@@ -1381,15 +1386,9 @@ todos of org can have states and the state can be changed with function.
 First, set the states of the TODO
 #+begin_src emacs-lisp :lexical t 
   (setq org-todo-keywords
-        '((sequence 
-  	 "TODO(t)"
-  	 "PLANNING(p)"
-  	 "IN-PROGRESS(i@/!)"
-  	 "VERIFYING(v!)"
-  	 "|"
-  	 "DONE(d)"
-  	 "OBE(o@!)"
-  	 "WONT-DO(w@/!)")))
+        '((sequence "TODO(t)" "STARTED(s!)" "NEXT(n!)" "BLOCKED(b@/!)" "|" "DONE(d)")
+          (sequence "IDEA(i)" "|" "CANCELED(c@/!)" "DELEGATED(D@/!)")
+          (sequence "RESEARCH(r)" "|")))
 #+end_src
 
 Also, set colors for the todos, too.
@@ -1397,13 +1396,7 @@ Also, set colors for the todos, too.
   (setq org-todo-keyword-faces
         '(
   	("TODO" . (:foreground "GoldenRod" :weight bold))
-  	("PLANNING" . (:foreground "DeepPink" :weight bold))
-  	("IN-PROGRESS" . (:foreground "Cyan" :weight bold))
-  	("VERIFYING" . (:foreground "DarkOrange" :weight bold))
-  	("BLOCKED" . (:foreground "Red" :weight bold))
-  	("DONE" . (:foreground "LimeGreen" :weight bold))
-  	("OBE" . (:foreground "LimeGreen" :weight bold))
-  	("WONT-DO" . (:foreground "LimeGreen" :weight bold)
+  	("CANCELED" . (:foreground "IndianRed1" :weight bold)
   	 )))
 #+end_src
 
@@ -1557,7 +1550,7 @@ org capture template 에서 사용할 함수들
            (symbol-name (car property))
            (replace-regexp-in-string
             "\n.*" ""
-            (org-capture-file-template
+            (org-capture-fill-template
              (doct--replace-template-strings (cadr property)))))))))
 
   (defun +org-capture-todo ()
@@ -1566,154 +1559,30 @@ org capture template 에서 사용할 함수들
 #+end_src
 
 #+begin_src emacs-lisp :lexical t 
-  (setq org-capture-templates
-        (doct `(("Appointment"
-                 :keys "a"
-                 :properties ((Created "%U"))
-                 :template ("* %^{appointment} %^g" "%?")
-                 :hook (lambda ()
-                         (+org-capture-property-drawer)
-                         (unless org-note-abort (+org-schedule-relative-to-deadline))))
-                ("Account"
-                 :keys "A"
-                 :properties ((Created "%U"))
-                 :template ("* TODO %^{description} %^g" "%?")
-                 :hook +org-capture-property-drawer
-                 :children (("Buy"
-                             :keys "b")
-                            ("Borrow"
-                             :keys "B"
-                             :template ("* TODO Return %^{description} to %^{person} %^g"
-                                        "DEADLINE: %^T"
-                                        "%?"))
-                            ("Loan"
-                             :keys "l"
-                             :template ("* TODO Get %^{item} back from %^{person} %^g"
-                                        "DEADLINE: %^T"
-                                        "%?"))
-                            ("Favor"
-                             :keys "f")
-                            ("Sell"
-                             :keys "s"))
-                 ("Bookmark"
-                  :keys "b"
-                  :hook +org-capture-property-drawer
-                  :properties ((Created "%U"))
-                  :template ("* [[%x][%^{title}]] %^g" "%?"))
-                 ("Health"
-                  :keys "h"
-                  :children (("Blood Pressure"
-                              :keys "b"
-                              :type table-line
-                              :template "%(+compute-blood-pressure-table-row)|%?|"
-                              :table-line-pos "II-1")))
-                 ("Listen"
-                  :keys "l"
-                  :hook (lambda () (+org-capture-property-drawer) (+org-capture-todo))
-                  :template ("* TODO %^{Title} %^g" "%^{Genre}")
-                  :children (("Music"
-                              :keys "m"
-                              :template "%(wikinforg-capture \"album\")")
-                             ))
-                 ("Note"
-                  :keys "n"
-                  :file ,(defun +org-capture-repo-note-file ()
-                           "Find note for current repository."
-                           (require 'projectile)
-                           (let* ((coding-system-for-write 'utf-8)
-                                  (notedir "~/org/repo-notes/")
-                                  (project-root (projectile-project-root))
-                                  (name (concat (file-name-base (directory-file-name project-root)) ".org"))
-                                  (path (expand-file-name name (file-truename notedir))))
-                             (with-current-buffer (find-file-noselect path)
-                               (unless (derived-mode-p 'org-mode) (org-mode)
-                                       ;; set to utf-8 as we may be visiting raw file
-                                       (setq buffer-file-coding-system 'utf-8-unix))
-                               (when-let* ((headline (doct-get :headline)))
-                                 (unless (org-find-exact-headline-in-buffer headline)
-                                   (goto-char (point-max))
-                                   (insert "* " headline)
-                                   (org-set-tags (downcase headline))))
-                               (unless (file-exists-p path) (write-file path))
-                               path)))
-                  :template (lambda () (concat "* %{todo-state} " (when (y-or-n-p "Link? ") "%A\n") "%?"))
-                  :todo-state "TODO"
-                  :children (("bug"           :keys "b" :headline "Bug")
-                             ("design"        :keys "d" :headline "Design")
-                             ("documentation" :keys "D" :headline "Documentation")
-                             ("enhancement"   :keys "e" :headline "Enhancement" :todo-state "IDEA")
-                             ("feature"       :keys "f" :headline "Feature"     :todo-state "IDEA")
-                             ("optimization"  :keys "o" :headline "Optimization")
-                             ("miscellaneous" :keys "s" :headline "Security")))
-                 ("Play"
-                  :keys "p"
-                  :hook +org-capture-todo
-                  :template "%(wikinforg-capture \"game\")")
-                 ("Read"
-                  :keys "r"
-                  :template "%(wikinforg-capture \"book\")"
-                  :hook +org-capture-todo
-                  :children (
-                             ("finction"
-                              :keys "f"
-                              )
-                             ("non-fiction"
-                              :keys "n")
-                             ))
-                 ("Todo" :keys "t"
-                  :hook (lambda ()
-                          (+org-capture-property-drawer)
-                          (condition-case nil (org-todo) (quit nil)))
-                  :propertis ((Created "%U"))
-                  :template ("* %^{description} %^g" "%?"))
-                 ("use-package" :keys "u"
-                  :file ,(expand-file-name "init.org" user-emacs-directory)
-                  :function
-                  ,(defun +org-capture-use-package-form ()
-                     "place point for use-package capture template."
-                     (org-fold-show-all)
-                     (goto-char (org-find-entry-with-id ""))
-                     (org-narrow-to-subtree)
-                     (when-let* ((name (read-string "package name: "))
-                                 (headlines (nthchr 4 (caddr (org-element-parse-buffer 'headline 'visible))))
-                                 (packages (mapcar (lambda (headline) (cons (plist-get (cadr headline) :raw-value)
-                                                                            (plist-get (cadr headline) :contents-end)))
-                                                   headlines))
-                                 (target (let ((n (downcase name)))
-                                           (cdr
-                                            (cl-some (lambda (package) (and (string-greaterp n (downcase (car package))) package))
-                                                     (nreverse packages))))))
-                       (setq org-capture-plist
-                             (plist-put org-capture-plist :doct
-                                        (plist-put (org-capture-get :doct) :use-package name)))
-                       (goto-char target)
-                       (org-end-of-subtree)
-                       (open-line 1)
-                       (forward-line 1)))
-                  :type plain
-                  :empty-lines-after 1
-                  :template ("** %(doct-get :use-package)"
-                             "#+begin_quote"
-                             "%(read-string \"package description:\")"
-                             "#+end_quote"
-                             "#+begin_src emacs-lisp\n"
-                             "(use-package %(doct-get :use-package)%?)"
-                             "#+end_src"))
-
-                 ("Wanch" :keys "w"
-                  :template "%(wikinforg-capture \"%{entity}\")"
-                  :hook +org-capture-todo
-                  :children (
-                             ("Film" :keys "f" :entity "film")
-                             ("TV" :keys "t" :entity "show")
-                             ("Presentation" :keys "p"
-                              :template "* %^{Title} %^g %^{Year}p")))))))
+(setq org-capture-templates
+      (doct `(("Appointment"
+               :keys "a"
+               :id "ef4d4449-524c-4c3b-afdd-e3e3e7cf7adc"
+               :properties ((Created "%U"))
+               :template ("* %^{appointment} %^g" "%?")
+               :hook (lambda ()
+                       (+org-capture-property-drawer)
+                       (unless org-note-abort (+org-schedule-relative-to-deadline))))
+              ("Todo" :keys "t"
+               :id "a29c811f-b2cb-4450-a33e-07d4166c71f1"
+               :hook (lambda () (+org-capture-property-drawer)
+                       (condition-case nil (org-todo) (quit nil)))
+               :properties ((Created "%U"))
+               :template ("* %^{description} %^g" "%?")))))
 
 (defun +org-capture-delete-frame (&rest _args)
   "Delete frame with a name frame-parameter set to \"capture\""
   (when (and (daemonp) (string= (frame-parameter (selected-frame) 'name) "capture"))
     (delete-frame)))
 (add-hook 'org-capture-after-finalize-hook #'+org-capture-delete-frame 100)
+#+end_src
+
+#+begin_src emacs-lisp :lexical t
 (defun +org-capture-make-frame ()
   "Create a new frame and run org-capture."
   (interactive)
@@ -1725,17 +1594,18 @@ org capture template 에서 사용할 함수들
       ;; "q" signals (error "Abort") in `org-capture'
       ;; delete the newly created frame in this scenario.
       (user-error (when (string= (cadr err) "Abort") (delete-frame))))))
+
 :commands (+org-capture-make-frame)
 :general
 (:states 'normal
          :keymaps 'org-capture-mode-map
-         ",c" 'org-capture-finalize
-         ",k" 'org-capture-kill
-         ",r" 'org-capture-refile)
+         "C-, c" '(org-capture-finalize :which-key "capture finalize")
+         "C-, k" '(org-capture-kill :which-key "capture kill")
+         "C-, r" '(org-capture-refile :which-key "capture refile"))
 :custom
 (org-capture-dir (concat (getenv "HOME") "/org/todo/")))
-
 #+end_src
+
 ** Org fancy priorities
 #+begin_src emacs-lisp :lexical t
   (use-package org-fancy-priorities

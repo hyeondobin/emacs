@@ -7,7 +7,7 @@
 * Basic UI Configs
 
 
-#+BEGIN_SRC emacs-lisp 
+#+BEGIN_SRC emacs-lisp :lexical t 
   ;; -*- lexical-binding: t; -*-
 
   ;;; This file is generated from confiig.org file in this repository
@@ -29,7 +29,7 @@
 
 * Package Manager
 ** Elpaca BootStrap
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   ;;; --- Elpaca Bootstrap ---
   (defvar elpaca-installer-version 0.11)
   (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
@@ -72,7 +72,7 @@
 #+end_src
 ** use-package 
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (defmacro use-feature (name &rest args)
     "`use-package' for packages which do not require installation.
   See `use-package' for NAME and ARGS."
@@ -82,7 +82,7 @@
        ,@args))
 #+end_src
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   (elpaca elpaca-use-package
     (elpaca-use-package-mode))
 
@@ -92,13 +92,13 @@
 
 * Configuring early init
 Elpaca를 사용하기 위해 설정해야 하는 옵션을 설정해준다. 
-#+begin_src emacs-lisp :tangle early-init.el
+#+begin_src emacs-lisp :lexical t :tangle early-init.el
   (setq package-enable-at-startup nil)
 #+end_src
 
 * Theme
 
- #+begin_src emacs-lisp 
+ #+begin_src emacs-lisp :lexical t 
    (use-package catppuccin-theme
      :ensure t
      :config
@@ -109,7 +109,7 @@ Elpaca를 사용하기 위해 설정해야 하는 옵션을 설정해준다.
 
 * General
 General은 evil-mode의 leader-key 기능을 편하게 사용하기 위해 사용하고 있는 패키지이다. 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   (use-package general
     :ensure (:wait t)
     :demand t
@@ -127,7 +127,7 @@ General은 evil-mode의 leader-key 기능을 편하게 사용하기 위해 사�
 Leader key로 ~,~ 를 사용한다.
 
 dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해준다.
- #+begin_src emacs-lisp 
+ #+begin_src emacs-lisp :lexical t 
    (general-define-key
     :keymaps 'override
     :states '(insert normal hybrid motion visual operator emacs)
@@ -141,7 +141,7 @@ dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해
      :keymaps '+prefix-map)
 #+end_src
 
- #+begin_src emacs-lisp 
+ #+begin_src emacs-lisp :lexical t 
    (dh-global-def
     "SPC" 'execute-extended-command
     "h" (general-simulate-key "C-h" :which-key "help")
@@ -160,7 +160,7 @@ dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해
 
 =dh-global-leader= 는 major mode별로 단축키들을 설정하는 데 사용한다.
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
    (general-create-definer dh-global-leader
      :keymaps 'override
      :states '(insert normal hybrid motion virual operator)
@@ -175,7 +175,7 @@ dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해
 #+end_src
 
 하위 메뉴 단축키들을 쉽게 설정할 수 있게 매크로를 선언한다. 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
    (defmacro +general-global-menu! (name prefix-key &rest body)
      "Create a definer named +general-global-NAME wrapping dh-global-def.
      Create prefix map: +general-global-NAME-map. Prefix bindings in BODY with PREFIX-KEY."
@@ -194,7 +194,7 @@ dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해
 #+end_src
 
 *** Application
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   (+general-global-menu! "application" "a"
     "p" '(:ignore t "elpaca")
     "pb" 'elpaca-browse
@@ -216,7 +216,7 @@ dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해
 #+end_src
 
 *** Buffers
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   (+general-global-menu! "buffer" "b"
     "d" 'kill-current-buffer
     "o" '((lambda () (interactive) (switch-to-buffer nil))
@@ -235,12 +235,12 @@ dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해
 
 *** Bookmarks
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   (+general-global-menu! "bookmark" "B")
 #+end_src
 
 *** Eval
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   (+general-global-menu! "eval" "e"
     "b" 'eval-buffer
     "d" 'eval-defun
@@ -250,7 +250,7 @@ dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해
 #+end_src
 
 *** Files
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   (+general-global-menu! "file" "f"
     "d" '((lambda (&optional arg) (interactive "P")
   	  (let ((buffer (when arg (current-buffer))))
@@ -272,7 +272,7 @@ dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해
   #+end_src
 
 *** Frames
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (+general-global-menu! "frame" "F"
     "D" 'delete-other-frames
     "F" 'select-frame-by-name
@@ -290,17 +290,17 @@ dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해
 #+end_src
 
 *** Git version-control
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (+general-global-menu! "git/version-control" "g")
 #+end_src
 
 *** Links
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
 (+general-global-menu! "link" "l")
 #+end_src
 
 *** Narrowing
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (+general-global-menu! "narrow" "n"
     "d" 'narrow-to-defun
     "p" 'narrow-to-page
@@ -309,13 +309,13 @@ dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해
 #+end_src
 
 *** Projects
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (+general-global-menu! "project" "p"
     "b" '(:ignore t :which-key "buffer"))
 #+end_src
 
 *** Quit with options
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   (+general-global-menu! "quit" "q"
     "r" 'restart-emacs
     "s" 'save-buffers-kill-terminal
@@ -324,24 +324,24 @@ dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해
  #+end_src
 
 *** Spelling
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
 (+general-global-menu! "spelling" "s")
 #+end_src
 
 *** Text
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (+general-global-menu! "text" "x"
     "i" 'instert-char
     "I" (general-simulate-key "C-x 8" :which-key "iso"))
 #+end_src
 
 *** Tabs
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
 (+general-global-menu! "tab" "t")
 #+end_src
 
 *** Toggle
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (+general-global-menu! "toggle" "T"
     "d" '(:ignore t :which-key "debug")
     "de" 'toggle-debug-on-error
@@ -350,7 +350,7 @@ dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해
 #+end_src
 
 *** Windows
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (+general-global-menu! "window" "w"
     "d" 'delete-window
     "h" 'windmove-left
@@ -369,6 +369,7 @@ dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해
     "sh" 'split-window-vertically
     "t" 'window-toggle-side-windows
     "." '(:ignore t :which-key "resize")
+    ".b" 'balance-windows
     ".h" '((lambda () (interactive)
   	   (call-interactively (if (window-prev-sibling) #'enlarge-window-horizontally
   				 #'shrink-window-horizontally)))
@@ -391,7 +392,7 @@ dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해
 
 *** Vim completion
 안 쓸 거 같지만 일단 참고용.
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp :lexical t :tangle no
   ;; vim like completion
   (general-create-definer completion-def
     :prefix "C-x")
@@ -401,7 +402,7 @@ dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해
 =Extensible VI Layer=
 emacs에서 vim의 단축키를 사용할 수 있게 해주는 패키지. 설정을 잘 하면 꽤 편하게 사용할 수 있지만 현재 단계에서는 모드가 켜졌다가 꺼졌다가를 반복해서 아직은 잘못 누르는 실수를 할 때가 많다. 
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   (use-package evil
     :demand t
     :ensure t
@@ -442,14 +443,14 @@ emacs에서 vim의 단축키를 사용할 수 있게 해주는 패키지. 설정
     )
 #+end_src
 ** Evil anzu
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-package evil-anzu
     :ensure t
     :after (evil anzu))
 #+end_src
 
 ** Evil surround
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   (use-package evil-surround
     :ensure t
     :after evil
@@ -458,7 +459,7 @@ emacs에서 vim의 단축키를 사용할 수 있게 해주는 패키지. 설정
 #+end_src
 
 ** Evil commentary
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   (use-package evil-commentary
     :ensure t
     :after evil
@@ -469,7 +470,7 @@ emacs에서 vim의 단축키를 사용할 수 있게 해주는 패키지. 설정
 ** Evil collection
 
 =Evil= 이 기본적으로 제공하지 않는 Emacs의 나머지 부분들에 대한 키 설정을 제공하는 패키지이다. 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   (use-package evil-collection
     :ensure t
     :after (evil)
@@ -487,7 +488,7 @@ emacs에서 vim의 단축키를 사용할 수 있게 해주는 패키지. 설정
 ** Evil numbers
 Make =C-a= and =C-s= work like =C-a= =C-x= in vim.
 =normal= 모드에서 =C-a= =C-s= 를 단축키로 지정했다.
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   (use-package evil-numbers
     :ensure t
     :after (general)
@@ -499,7 +500,7 @@ Make =C-a= and =C-s= work like =C-a= =C-x= in vim.
 
 * Anzu
 검색 시에 현재/총합을 모드라인에 표시해준다. 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-package anzu
     :defer 10
     :config (global-anzu-mode))
@@ -508,7 +509,7 @@ Make =C-a= and =C-s= work like =C-a= =C-x= in vim.
 
 * Auto fill mode
 80자에서 line wrapping을 해준다.
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-feature simple
   	     :general
   	     (+general-global-toggle
@@ -516,7 +517,7 @@ Make =C-a= and =C-s= work like =C-a= =C-x= in vim.
 #+end_src
 
 * Auto revert
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-feature autorevert
   	     :defer 2
   	     :custom
@@ -526,7 +527,7 @@ Make =C-a= and =C-s= work like =C-a= =C-x= in vim.
 #+end_src
 
 * Bookmark
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-feature bookmark
     :custom (bookmark-fontify nil)
     :general
@@ -538,7 +539,7 @@ Make =C-a= and =C-s= work like =C-a= =C-x= in vim.
 
 * Calc
 Emacs calculator
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-feature calc
   	     :general
   	     (+general-global-menu! "calc" "c"
@@ -550,7 +551,7 @@ Emacs calculator
 * Completion system
 ** Corfu
 In-buffer completion
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   (use-package corfu
     :bind
     (:map corfu-map
@@ -580,7 +581,7 @@ In-buffer completion
 #+end_src
 ** Vertico
 Minibuffer completion
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   (use-package vertico
     :ensure t
     :config
@@ -606,7 +607,7 @@ Minibuffer completion
 =Completion At Point Extensions=
 customize dabbrev with Cape package
 not sure what this provides. Research needed
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   (use-package cape
     :ensure t
     :commands (cape-file)
@@ -627,7 +628,7 @@ not sure what this provides. Research needed
 
 ** Orderless
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   (use-package orderless
     :defer 1
     :ensure t
@@ -647,7 +648,7 @@ not sure what this provides. Research needed
 #+end_src
 
 ** Consult
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   (use-package consult
     :demand t
     :ensure t
@@ -685,7 +686,7 @@ not sure what this provides. Research needed
 #+end_src
 
 * Compile
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-feature compile
     :commands (compile recompile)
     :custom (compilation-scroll-output 'first-error)
@@ -699,14 +700,14 @@ not sure what this provides. Research needed
 #+end_src
 
 * Custom set variables
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-feature cus-edit
     :custom
     (custom-file null-device "NO COUSTOMIZATIONS"))
 #+end_src
 
 * Dictionary
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-feature dictionary
     :defer t
     :general
@@ -719,7 +720,7 @@ not sure what this provides. Research needed
 #+end_src
 
 * Dired
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-feature dired
     :commands (dired)
     :custom
@@ -732,8 +733,15 @@ not sure what this provides. Research needed
     (+general-global-application "d" 'dired))
 #+end_src
 
+* Doct
+#+begin_src emacs-lisp :lexical t
+(use-package doct
+  :ensure t
+  :commands (doct))
+#+end_src
+
 * Doom modeline
- #+begin_src emacs-lisp
+ #+begin_src emacs-lisp :lexical t
    (use-package doom-modeline
      :defer 2
      :ensure t
@@ -751,7 +759,7 @@ not sure what this provides. Research needed
  #+end_src
 
 * Ediff
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-feature ediff
     :defer t
     :custom
@@ -762,7 +770,7 @@ not sure what this provides. Research needed
 #+end_src
 
 * Elisp mode
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-feature elisp-mode
     :config
     (dh-global-leader
@@ -779,7 +787,7 @@ not sure what this provides. Research needed
 
 * Emacs
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   (use-feature emacs
     :custom
     (scroll-conservatively 101) 
@@ -801,7 +809,7 @@ not sure what this provides. Research needed
 
 * Files
 Save backup files into one directory 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-feature files
     :config
     (defun rename-file-and-buffer (new-name)
@@ -837,7 +845,7 @@ Save backup files into one directory
 #+end_src
 
 * Find func
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-feature find-func
     :defer t
     :config (setq find-function-C-source-directory
@@ -845,7 +853,7 @@ Save backup files into one directory
 #+end_src
 
 * Fill column indicator
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-feature display-fill-column-indicator
     :custom
     (display-fill-column-indicator-character
@@ -864,7 +872,7 @@ Save backup files into one directory
 #+end_src
 
 * flycheck
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-package flycheck
     :ensure t
     :commands (flycheck-mode)
@@ -873,7 +881,7 @@ Save backup files into one directory
 
 ** flycheck-package 
 =packae-lint= integration for flycheck.
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-package flycheck-package
     :ensure t
     :after (flycheck)
@@ -883,7 +891,7 @@ Save backup files into one directory
 #+end_src
 
 * Flymake 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-feature flymake
     :general
     (dh-global-leader
@@ -908,14 +916,14 @@ Save backup files into one directory
 #+end_src
 
 * Flymake guile
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-package flymake-guile
     :defer t
     :hook (scheme-mode . flymake-guile))
 #+end_src
 
 * Flyspell
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-feature flyspell
     :commands (flyspell-mode flyspell-prog-mode)
     :general
@@ -931,7 +939,7 @@ Save backup files into one directory
 #+end_src
 
 ** Flyspell correct
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-package flyspell-correct
     :ensure t
     :after (flyspell)
@@ -942,14 +950,14 @@ Save backup files into one directory
 #+end_src
 
 * Fontify face
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-package fontify-face
     :ensure t
     :commands (fontisy-face-mode))
 #+end_src
 
 * Help
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-feature help
     :defer 1
     :custom
@@ -958,7 +966,7 @@ Save backup files into one directory
 #+end_src
 
 * history
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-feature savehist
     :defer 1
     :config
@@ -968,7 +976,7 @@ Save backup files into one directory
 * Holidays
 org agenda와 calendar에서 공휴일을 표시한다.
 필요없는 기본 휴일들을 제외한다.
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-feature holidays
     :commands (org-agenda)
     :custom
@@ -979,7 +987,7 @@ org agenda와 calendar에서 공휴일을 표시한다.
 
 * Magit
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   (use-package transient
     :ensure t)
   (use-package magit
@@ -1010,7 +1018,7 @@ org agenda와 calendar에서 공휴일을 표시한다.
 
 * Marginalia
 command 설명 추가해주는 패키지
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-package marginalia
     :ensure t
     :defer 2
@@ -1019,7 +1027,7 @@ command 설명 추가해주는 패키지
 #+end_src
 
 * Minibuffer
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-feature minibuffer
     :custom (read-file-name-completion-ignore-case t)
     :config
@@ -1038,7 +1046,7 @@ command 설명 추가해주는 패키지
 
 * Which-key
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   (use-package which-key
     :demand t
     :diminish
@@ -1056,7 +1064,7 @@ command 설명 추가해주는 패키지
 
 * Util
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   ;; auto pair
   (electric-pair-mode 1)
   (recentf-mode 1)
@@ -1073,7 +1081,7 @@ command 설명 추가해주는 패키지
 
 * Dashboard
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   (use-package dashboard
     :ensure t
     :config
@@ -1082,7 +1090,7 @@ command 설명 추가해주는 패키지
 
 * Desktop save mode
 =nvim= 에서 사용했던 =restore session= 느낌으로 생각했는데 뭔가 달라서 다른 방법을 찾아봐야할 것 같다. 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp :lexical t :tangle no
   (desktop-save-mode 1)
 #+end_src
 
@@ -1092,14 +1100,14 @@ JetBrains Mono Nerd Font
 =C-u C-x == 
 
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   (set-face-attribute 'default nil
   		    :height 150
   		    :family "JetBrainsMono Nerd Font")
 #+end_src
 
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp :lexical t :tangle no
   (defvar dh/kor-font
     (font-spec
      :family "D2CodingLigature Nerd Font"
@@ -1115,13 +1123,13 @@ JetBrains Mono Nerd Font
   (setq-default line-spacing 5) ; 
 #+end_src
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   (setq default-input-method "korean-hangul")
   (set-language-environment "Korean")
   (global-set-key (kbd "<hangul>") 'toggle-input-method)
 #+end_src
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   (setq locale-coding-system 'utf-8)
   (set-keyboard-coding-system 'utf-8)
   (set-selection-coding-system 'utf-8)
@@ -1129,7 +1137,7 @@ JetBrains Mono Nerd Font
   (prefer-coding-system 'utf-8)
 #+end_src
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   (setenv "GTK_IM_MODULE" "fcitx")
   (setenv "QT_IM_MODULE" "fcitx")
   (setenv "XMODIFIERS" "@im=fcitx")
@@ -1137,9 +1145,9 @@ JetBrains Mono Nerd Font
 
 * Org mode
 Org mode
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   (use-package org
-    :ensure t
+    :ensure nil
     :custom
     (org-ellipsis (nth 5 '("↴" "˅" "…" " ⬙" " ▽" "▿")))
     (org-M-RET-may-split-line nil "Don't split current line when creating new heading")
@@ -1189,7 +1197,7 @@ Org mode
 :PROPERTIES:
 :header-args: :noweb-ref org-keybinds
 :END:
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (general-define-key :states '(normal) :keymaps 'org-mode-map
                       (kbd "<tab>") 'org-cycle
                       (kbd "<backtab>") 'org-shifttab)
@@ -1352,7 +1360,7 @@ Org mode
 #+end_src
 
 ** configs
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   (use-package org-super-agenda :ensure t)
   (use-package comment-tags :ensure t)
 
@@ -1371,7 +1379,7 @@ Org mode
 ** ToDo States
 todos of org can have states and the state can be changed with function.
 First, set the states of the TODO
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   (setq org-todo-keywords
         '((sequence 
   	 "TODO(t)"
@@ -1385,7 +1393,7 @@ First, set the states of the TODO
 #+end_src
 
 Also, set colors for the todos, too.
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp :lexical t 
   (setq org-todo-keyword-faces
         '(
   	("TODO" . (:foreground "GoldenRod" :weight bold))
@@ -1400,7 +1408,7 @@ Also, set colors for the todos, too.
 #+end_src
 
 ** Org agenda
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-feature org-agenda
     :after (general evil)
     :config
@@ -1428,7 +1436,7 @@ Also, set colors for the todos, too.
 :PROPERTIES:
 :header-args: :noweb-ref org-agenda-keybindings
 :END:
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
 
 #+end_src
 
@@ -1437,7 +1445,7 @@ Also, set colors for the todos, too.
 :header-args: :noweb-ref org-agenda-custom
 :END:
 Add a custom view for a simplified work agenda.
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (org-agenda-window-setup 'current-window)
   (setq org-agenda-custom-commands
         '(("w" "Work Schedule" agenda "+work"
@@ -1455,7 +1463,7 @@ Add a custom view for a simplified work agenda.
 
 ** Org babel
 *** tangle
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-feature ob-tangle
     :after (org)
     :custom
@@ -1478,15 +1486,15 @@ Add a custom view for a simplified work agenda.
 :END:
 **** Structured Templates
 코드 블록들 중에 자주 사용하는 코드들의 템플릿을 추가한다.
-#+begin_src emacs-lisp
-  (dolist (templates '(("se" . "src emacs-lisp :lexical t")
+#+begin_src emacs-lisp :lexical t
+  (dolist (templates '(("se" . "src emacs-lisp :lexical t\n")
                        ("ss" . "src shell")
                        ("sj" . "src javascript")))
     (add-to-list 'org-structure-template-alist templates))
    
 #+end_src
 *** Languages
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-feature ob-js
     :commands (org-babel-execute:js))
   (use-feature ob-python
@@ -1499,17 +1507,17 @@ Add a custom view for a simplified work agenda.
     (org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages))
 #+end_src
 ** Org capture
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-feature org-capture
     :config
     (define-advice org-capture-fill-template (:around (fn &rest args) comma-for-crm)
       (advice-add #'completing-read-multiple :around #'+org-tags-crm)
       (apply fn args))
-    (add-hook 'org-capture-mode-hook #'evil-insert-state))
+    (add-hook 'org-capture-mode-hook #'evil-insert-state)
 #+end_src
 
 org capture template 에서 사용할 함수들
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (defun +org-schedule-relative-to-deadline ()
     ""
     (interactive)
@@ -1557,7 +1565,7 @@ org capture template 에서 사용할 함수들
     (org-todo "TODO"))
 #+end_src
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t 
   (setq org-capture-templates
         (doct `(("Appointment"
                  :keys "a"
@@ -1688,7 +1696,7 @@ org capture template 에서 사용할 함수들
                              "#+begin_quote"
                              "%(read-string \"package description:\")"
                              "#+end_quote"
-                             "#+begin_src emacs-lisp"
+                             "#+begin_src emacs-lisp\n"
                              "(use-package %(doct-get :use-package)%?)"
                              "#+end_src"))
 
@@ -1699,36 +1707,37 @@ org capture template 에서 사용할 함수들
                              ("Film" :keys "f" :entity "film")
                              ("TV" :keys "t" :entity "show")
                              ("Presentation" :keys "p"
-                              :template "* %^{Title} %^g %^{Year}p"))))))
+                              :template "* %^{Title} %^g %^{Year}p")))))))
 
-        (defun +org-capture-delete-frame (&rest _args)
-          "Delete frame with a name frame-parameter set to \"capture\""
-          (when (and (daemonp) (string= (frame-parameter (selected-frame) 'name) "capture"))
-            (delete-frame)))
-        (add-hook 'org-capture-after-finalize-hook #'+org-capture-delete-frame 100)
-        (defun +org-capture-make-frame ()
-          "Create a new frame and run org-capture."
-          (interactive)
-          (select-frame-by-name "capture")
-          (delete-other-windows)
-          (cl-letf (((symbol-function 'switch-to-buffer-other-window) #'switch-to-buffer))
-            (condition-case err
-                (org-capture)
-              ;; "q" signals (error "Abort") in `org-capture'
-              ;; delete the newly created frame in this scenario.
-              (user-error (when (string= (cadr err) "Abort") (delete-frame))))))
-        :commands (+org-capture-make-frame)
-        :general
-        (:states 'normal
-                 :keymaps 'org-capture-mode-map
-                 ",c" 'org-capture-finalize
-                 ",k" 'org-capture-kill
-                 ",r" 'org-capture-refile)
-        :custom
-        (org-capture-dir (concat (getenv "HOME") "/org/todo/")))
+(defun +org-capture-delete-frame (&rest _args)
+  "Delete frame with a name frame-parameter set to \"capture\""
+  (when (and (daemonp) (string= (frame-parameter (selected-frame) 'name) "capture"))
+    (delete-frame)))
+(add-hook 'org-capture-after-finalize-hook #'+org-capture-delete-frame 100)
+(defun +org-capture-make-frame ()
+  "Create a new frame and run org-capture."
+  (interactive)
+  (select-frame-by-name "capture")
+  (delete-other-windows)
+  (cl-letf (((symbol-function 'switch-to-buffer-other-window) #'switch-to-buffer))
+    (condition-case err
+        (org-capture)
+      ;; "q" signals (error "Abort") in `org-capture'
+      ;; delete the newly created frame in this scenario.
+      (user-error (when (string= (cadr err) "Abort") (delete-frame))))))
+:commands (+org-capture-make-frame)
+:general
+(:states 'normal
+         :keymaps 'org-capture-mode-map
+         ",c" 'org-capture-finalize
+         ",k" 'org-capture-kill
+         ",r" 'org-capture-refile)
+:custom
+(org-capture-dir (concat (getenv "HOME") "/org/todo/")))
+
 #+end_src
 ** Org fancy priorities
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-package org-fancy-priorities
     :ensure t
     :commands (org-fancy-priorities-mode)
@@ -1760,14 +1769,14 @@ org capture template 에서 사용할 함수들
              ("¬I¬U (%s)" . "E")))))
 #+end_src
 ** Org make toc
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-package org-make-toc
     :ensure t
     :commands (org-make-toc))
 #+end_src
 ** Org modern
 Org mode에서 좀 더 외관이 좋아지게 한다.
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-package org-modern :after (org)
     :ensure t
     :config
@@ -1775,7 +1784,7 @@ Org mode에서 좀 더 외관이 좋아지게 한다.
     (remove-hook 'org-agenda-finalize-hook 'org-modern-agenda))
 #+end_src
 ** Org roam
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-package org-roam
     :ensure t
     :disabled t
@@ -1786,19 +1795,19 @@ Org mode에서 좀 더 외관이 좋아지게 한다.
 #+end_src
 ** Org superstar
 Org mode에서 Heading과 plain list를 예쁘게 만든다. 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-package org-superstar
     :ensure t
     :after (org))
 #+end_src
 ** Paren
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-feature paren
     :defer 1
     :config (show-paren-mode))
 #+end_src
 ** projectile
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-package projectile
     :ensure t
     :after (general)
@@ -1826,7 +1835,7 @@ Org mode에서 Heading과 plain list를 예쁘게 만든다.
     (projectile-mode))
 #+end_src
 ** PDF tools
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-package pdf-tools
     :ensure t
     :functions (pdf-isearch-batch-mode)
@@ -1843,21 +1852,21 @@ Org mode에서 Heading과 plain list를 예쁘게 만든다.
 #+end_src
 ** Rainbow mode
 colorize color names in buffers
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-package rainbow-mode
     :ensure t
     :commands (rainbow-mode))
 #+end_src
 ** Re-builder
 re-builder는 reg-exp의 미리보기를 보여준다. 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-feature re-builder
     :custom
     (reb-re-syntax 'rx)
     :commands (re-builder))
 #+end_src
 ** recentf
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-feature recentf
     :defer 1
     :config (recentf-mode)
@@ -1866,7 +1875,7 @@ re-builder는 reg-exp의 미리보기를 보여준다.
     (recentf-max-saved-items 1000 "Save more recent files"))
 #+end_src
 ** Tab bar
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-feature tab-bar
     :custom
     (tab-bar-close-button-show nil "Hide the x button on tabs")
@@ -1893,14 +1902,14 @@ re-builder는 reg-exp의 미리보기를 보여준다.
       "w" 'tab-bar-move-tab-to-frame))
 #+end_src
 ** Tab line
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-feature tab-line
     :custom
     (tab-line-close-button-show nil)
     (tab-line-new-button-show   nil))
 #+end_src
 ** Time
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-feature time
     :custom
     (display-time-day-and-date t)
@@ -1908,7 +1917,7 @@ re-builder는 reg-exp의 미리보기를 보여준다.
     (display-time))
 #+end_src
 ** Tramp
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-feature tramp
     :defer t
     :custom (tramp-terminal-type "tramp")
@@ -1916,13 +1925,13 @@ re-builder는 reg-exp의 미리보기를 보여준다.
 #+end_src
 ** VC hooks
 visit real file when editing a symlink without prompting
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-feature vc-hooks
     :custom
     (vc-follow-symlinks t))
 #+end_src
 ** Vterm
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-package vterm
     :ensure (vterm :post-build
                    (progn
@@ -1952,12 +1961,12 @@ visit real file when editing a symlink without prompting
     (evil-set-initial-state 'vterm-mode 'emacs))
 #+end_src
 ** Wikinforg
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-package wikinfo
     :ensure t
     :defer t)
 #+end_src
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical t
   (use-package wikinforg
     :ensure t
     :commands (wikinforg wikinforg-capture)
@@ -1971,4 +1980,38 @@ visit real file when editing a symlink without prompting
     (add-hook 'wikinforg-mode-hook #'olivetti-mode)
   (add-hook 'wikinforg-mode-hook (lambda () (writegood-mode -1)))
   (evil-make-intercept-map wikinforg-mode-map))
+#+end_src
+** winner
+#+begin_src emacs-lisp :lexical t
+(use-feature winner
+  :defer 5
+  :config
+  (+general-global-window
+    "u" 'winner-undo
+    "r" 'winner-redo)
+  (winner-mode))
+#+end_src
+** window
+#+begin_src emacs-lisp :lexical t
+(use-feature window
+  :custom
+  (switch-to-buffer-obey-display-actions t)
+  (switch-to-prev-buffer-skip-regexp
+   '("\\*Help\\*" "\\*Calendar\\*" "\\*Messages\\*" "\\*scratch\\*" "\\magit-.*")))
+#+end_src
+** writegood
+#+begin_src emacs-lisp :lexical t
+(use-package writegood-mode
+  :ensure t
+  :commands (writegood-mode)
+  :hook (org-mode))
+#+end_src
+** yasnippet
+YASnippet is a template system for Emacs.
+#+begin_src emacs-lisp :lexical t
+(use-package yasnippet
+  :ensure t
+  :commands (yas-global-mode)
+  :custom
+  (yas-snippet-dirs '("~/.emacs.d/snippets")))
 #+end_src

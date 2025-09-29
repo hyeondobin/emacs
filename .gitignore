@@ -15,3 +15,7 @@ eshell/history
 eshell/lastdir
 eshell/alias~
 *.desktop*
+transient/history.el
+/history
+/places
+/.org-id-locations

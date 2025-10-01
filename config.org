@@ -421,12 +421,12 @@ emacs에서 vim의 단축키를 사용할 수 있게 해주는 패키지. 설정
     (evil-want-integration t)
     (evil-want-C-i-jump t)
     (evil-want-C-u-scroll t)
-    (evil-search-module 'evil-search "use vim-like search instead of 'isearch")
     (evil-undo-system 'undo-redo)
     :init
     ;; Pre load configuration
     (setq evil-want-keybinding nil)
     (setq evil-respect-visual-line-mode t)
+    (setq evil-search-module 'evil-search)
     :config
     (defun +evil-lookup-elisp-symbol ()
       "Lookup elisp symbol at point."

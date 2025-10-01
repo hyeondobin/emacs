@@ -143,18 +143,18 @@ dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해
 
  #+begin_src emacs-lisp :lexical t 
    (dh-global-def
-    "SPC" 'execute-extended-command
+    "SPC" '(execute-extended-command :which-key "execute-extended-command")
     "h" (general-simulate-key "C-h" :which-key "help")
-    "!" 'shell-command
-    ":" 'eval-expression
-    "." 'repeat
+    "!" '(shell-command :which-key "shell-command")
+    ":" '(eval-expression :which-key "eval-expression")
+    "." '(repeat :which-key "repeat")
     "z" '((lambda (local) (interactive "p")
    	 (unless repeat-mode (repeat-mode))
    	 (let ((local current-prefix-arg)
    	       (current-prefix-arg nil))
    	   (call-interactively (if local #'text-scale-adjust #'global-text-scale-adjust))))
           :which-key "Zoom")
-    "?" 'which-key-show-top-level
+    "?" '(which-key-show-top-level :which-key "which-key-show-top-level")
     )
 #+end_src
 
@@ -163,7 +163,7 @@ dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해
 #+begin_src emacs-lisp :lexical t 
    (general-create-definer dh-global-leader
      :keymaps 'override
-     :states '(insert normal hybrid motion virual operator)
+     :states '(insert normal hybrid motion virual operator emacs)
      :prefix ", m"
      :non-normal-prefix "M-, m"
      "" '(:ignore t
@@ -183,12 +183,15 @@ dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해
   (let* ((n (concat "+general-global-" name))
          (prefix-map (intern (concat n "-map"))))
     `(progn
+       (dh-global-def
+         ,prefix-key '(:ignore t :which-key ,name))
        (general-create-definer ,(intern n)
          :wrapping dh-global-def
          :prefix-map (quote ,prefix-map)
          :prefix ,prefix-key
          :wk-full-keys nil
-         "" '(:ignore t :which-key ,name))
+         ;; "" '(:ignore t :which-key ,name)
+         )
        (,(intern n) ,@body))))
 #+end_src
 
@@ -196,39 +199,39 @@ dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해
 #+begin_src emacs-lisp :lexical t
 (+general-global-menu! "application" "a"
     "p" '(:ignore t "elpaca")
-    "pb" 'elpaca-browse
+    "pb" '(elpaca-browse :which-key "elpaca-browse")
     "pr" '(
   	 (lambda () (interactive)
   	   (let ((current-prefix-arg (not current-prefix-arg))
   		 (this-command 'elpaca-rebuild))
   	     (call-interactively #'elpaca-rebuild)))
   	 :which-key "rebuild")
-    "pm" 'elpaca-manager
-    "pl" 'elpaca-log
-    "pi" 'elpaca-info
+    "pm" '(elpaca-manager :which-key "elpaca-manager")
+    "pl" '(elpaca-log :which-key "elpaca-log")
+    "pi" '(elpaca-info :which-key "elpaca-info")
     "pI" '((lambda () (interactive) (info "Elpaca"))
   	 :which-key "elpaca-info")
-    "ps" 'elpaca-status
-    "pt" 'elpaca-try
-    "pv" 'elpaca-visit
+    "ps" '(elpaca-status :which-key "elpaca-status")
+    "pt" '(elpaca-try :which-key "elpaca-try")
+    "pv" '(elpaca-visit :which-key "elpaca-visit")
     )
 #+end_src
 
 *** Buffers
 #+begin_src emacs-lisp :lexical t 
   (+general-global-menu! "buffer" "b"
-    "d" 'kill-current-buffer
+    "d" '(kill-current-buffer :which-key "kill-current-buffer")
     "o" '((lambda () (interactive) (switch-to-buffer nil))
-  	:which-key "other-buffer")
-    "p" 'previous-buffer
-    "r" 'rename-buffer
-    "R" 'revert-buffer
+  	      :which-key "other-buffer")
+    "p" '(previous-buffer :which-key "previous-buffer")
+    "r" '(rename-buffer :which-key "rename-buffer")
+    "R" '(revert-buffer :which-key "revert-buffer")
     "M" '((lambda () (interactive) (switch-to-buffer "*Messages*"))
-  	:which-key "messages-buffer")
-    "n" 'next-buffer
-    "s" 'scratch-buffer
+  	      :which-key "messages-buffer")
+    "n" '(next-buffer :which-key "next-buffer")
+    "s" '(scratch-buffer :which-key "scratch-buffer")
     "TAB" '((lambda () (interactive) (switch-to-buffer nil))
-  	  :which-key "other-buffer")
+  	        :which-key "other-buffer")
     )
 #+end_src
 
@@ -241,12 +244,12 @@ dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해
 *** Eval
 #+begin_src emacs-lisp :lexical t 
   (+general-global-menu! "eval" "e"
-    "b" 'eval-buffer
-    "d" 'eval-defun
-    "e" 'eval-expression
-    "p" 'pp-eval-last-sexp ; pp = pretty print
-    "r" 'eval-region
-    "s" 'eval-last-sexp)
+    "b" '(eval-buffer :which-key "eval-buffer")
+    "d" '(eval-defun :which-key "eval-defun")
+    "e" '(eval-expression :which-key "eval-expression")
+    "p" '(pp-eval-last-sexp :which-key "pp-eval-last-sexp")
+    "r" '(eval-region :which-key "eval-region")
+    "s" '(eval-last-sexp :which-key "eval-last-sexp"))
 #+end_src
 
 *** Files
@@ -255,38 +258,38 @@ dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해
     "d" '((lambda (&optional arg) (interactive "P")
   	  (let ((buffer (when arg (current-buffer))))
   	    (diff-buffer-with-file buffer)))
-  	:which-key "diff-with-file")
+  	      :which-key "diff-with-file")
     "e" '(:ignore t :which-key "edit")
     "ec" '((lambda () (interactive) (find-file "~/.emacs.d/config.org"))
-  	:which-key "Open Emacs Config")
+  	       :which-key "Open Emacs Config")
     "ed" '((lambda () (interactive) (find-file-existing literate-file)(widen))
-  	 :which-key "dotfile")
-    "f" 'find-file
-    "p" 'find-function-at-point
-    "P" 'find-function
-    "R" 'rename-file-and-buffer
-    "s" 'save-buffer
-    "v" 'find-variable-at-point
-    "V" 'find-variable
+  	       :which-key "dotfile")
+    "f" '(find-file :which-key "find-file")
+    "p" '(find-function-at-point :which-key "find-function-at-point")
+    "P" '(find-function :which-key "find-function")
+    "R" '(rename-file-and-buffer :which-key "rename-file-and-buffer")
+    "s" '(save-buffer :which-key "save-buffer")
+    "v" '(find-variable-at-point :which-key "find-variable-at-point")
+    "V" '(find-variable :which-key "find-variable")
     )
   #+end_src
 
 *** Frames
 #+begin_src emacs-lisp :lexical t
   (+general-global-menu! "frame" "F"
-    "D" 'delete-other-frames
-    "F" 'select-frame-by-name
-    "O" 'other-frame-prefix
+    "D" '(delete-other-frames :which-key "delete-other-frames")
+    "F" '(select-frame-by-name :which-key "select-frame-by-name")
+    "O" '(other-frame-prefix :which-key "other-frame-prefix")
     "c" '(:ignore t :which-key "color")
-    "cb" 'set-background-color
-    "cc" 'set-cursor-color
-    "cf" 'set-foreground-color
-    "f" 'set-frame-font
-    "m" 'make-frame-on-monitor
-    "n" 'next-window-any-frame
-    "o" 'other-frame
-    "p" 'previous-window-any-frame
-    "r" 'set-frame-name)
+    "cb" '(set-background-color :which-key "set-background-color")
+    "cc" '(set-cursor-color :which-key "set-cursor-color")
+    "cf" '(set-foreground-color :which-key "set-foreground-color")
+    "f" '(set-frame-font :which-key "set-frame-font")
+    "m" '(make-frame-on-monitor :which-key "make-frame-on-monitor")
+    "n" '(next-window-any-frame :which-key "next-window-any-frame")
+    "o" '(other-frame :which-key "other-frame")
+    "p" '(previous-window-any-frame :which-key "previous-window-any-frame")
+    "r" '(set-frame-name :which-key "set-frame-name"))
 #+end_src
 
 *** Git version-control
@@ -302,10 +305,10 @@ dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해
 *** Narrowing
 #+begin_src emacs-lisp :lexical t
   (+general-global-menu! "narrow" "n"
-    "d" 'narrow-to-defun
-    "p" 'narrow-to-page
-    "r" 'narrow-to-region
-    "w" 'widen)
+    "d" '(narrow-to-defun :which-key "narrow-to-defun")
+    "p" '(narrow-to-page :which-key "narrow-to-page")
+    "r" '(narrow-to-region :which-key "narrow-to-region")
+    "w" '(widen :which-key "widen"))
 #+end_src
 
 *** Projects
@@ -317,9 +320,9 @@ dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해
 *** Quit with options
 #+begin_src emacs-lisp :lexical t 
   (+general-global-menu! "quit" "q"
-    "r" 'restart-emacs
-    "s" 'save-buffers-kill-terminal
-    "Q" 'kill-emacs
+    "r" '(restart-emacs :which-key "restart-emacs")
+    "s" '(save-buffers-kill-terminal :which-key "save-buffers-kill-terminal")
+    "Q" '(kill-emacs :which-key "kill-emacs")
     )
  #+end_src
 
@@ -331,7 +334,7 @@ dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해
 *** Text
 #+begin_src emacs-lisp :lexical t
   (+general-global-menu! "text" "x"
-    "i" 'instert-char
+    "i" '(instert-char :which-key "instert-char")
     "I" (general-simulate-key "C-x 8" :which-key "iso"))
 #+end_src
 
@@ -344,32 +347,32 @@ dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해
 #+begin_src emacs-lisp :lexical t
   (+general-global-menu! "toggle" "T"
     "d" '(:ignore t :which-key "debug")
-    "de" 'toggle-debug-on-error
-    "dq" 'toggle-debug-on-quit
+    "de" '(toggle-debug-on-error :which-key "toggle-debug-on-error")
+    "dq" '(toggle-debug-on-quit :which-key "toggle-debug-on-quit")
     "s" '(:ignore t :which-key "spelling"))
 #+end_src
 
 *** Windows
 #+begin_src emacs-lisp :lexical t
   (+general-global-menu! "window" "w"
-    "d" 'delete-window
-    "h" 'windmove-left
-    "<left>" 'windmove-left
-    "j" 'windmove-down
-    "<down>" 'windmove-down
-    "k" 'windmove-up
-    "<up>" 'windmove-up
-    "l" 'windmove-right
-    "<right>" 'windmove-right
-    "o" 'other-window
-    "O" 'delete-other-windows
-    "q" 'delete-window
+    "d" '(delete-window :which-key "delete-window")
+    "h" '(windmove-left :which-key "windmove-left")
+    "<left>" '(windmove-left :which-key "windmove-left")
+    "j" '(windmove-down :which-key "windmove-down")
+    "<down>" '(windmove-down :which-key "windmove-down")
+    "k" '(windmove-up :which-key "windmove-up")
+    "<up>" '(windmove-up :which-key "windmove-up")
+    "l" '(windmove-right :which-key "windmove-right")
+    "<right>" '(windmove-right :which-key "windmove-right")
+    "o" '(other-window :which-key "other-window")
+    "O" '(delete-other-windows :which-key "delete-other-windows")
+    "q" '(delete-window :which-key "delete-window")
     "s" '(:ignore t :which-key "split")
-    "sv" 'split-window-horizontally ; my horizon is divider
-    "sh" 'split-window-vertically
-    "t" 'window-toggle-side-windows
+    "sv" '(split-window-horizontally :which-key "split-window-horizontally")
+    "sh" '(split-window-vertically :which-key "split-window-vertically")
+    "t" '(window-toggle-side-windows :which-key "window-toggle-side-windows")
     "." '(:ignore t :which-key "resize")
-    ".b" 'balance-windows
+    ".b" '(balance-windows :which-key "balance-windows")
     ".h" '((lambda () (interactive)
   	   (call-interactively (if (window-prev-sibling) #'enlarge-window-horizontally
   				 #'shrink-window-horizontally)))
@@ -384,7 +387,7 @@ dh-global-def는 대부분의 state에서 leader key를 사용할 수 있게 해
     ".k" '((lambda () (interactive)
   	   (call-interactively (if (window-prev-sibling) #'enlarge-window #'shrink-window)))
   	 :which-key "divider down")
-    "x" 'kill-buffer-and-window
+    "x" '(kill-buffer-and-window :which-key "kill-buffer-and-window")
     "X" '((lambda () (interactive) (call-interactively #'other-window) (kill-buffer-and-window))
   	:which-key "kill-other-buffer-and-window")
     )
@@ -431,14 +434,14 @@ emacs에서 vim의 단축키를 사용할 수 있게 해주는 패키지. 설정
   	(describe-symbol (intern symbol))
         (user-error "No symbol at point")))
     (+general-global-window
-      "H" 'evil-window-move-far-left
-      "J" 'evil-window-move-very-bottom
-      "K" 'evil-window-move-very-top
-      "L" 'evil-window-move-far-right)
+      "H" '(evil-window-move-far-left :which-key "evil-window-move-far-left")
+      "J" '(evil-window-move-very-bottom :which-key "evil-window-move-very-bottom")
+      "K" '(evil-window-move-very-top :which-key "evil-window-move-very-top")
+      "L" '(evil-window-move-far-right :which-key "evil-window-move-far-right"))
     (+general-global-menu! "quit" "q"
-      ":" 'evil-command-window-ex
-      "/" 'evil-command-window-search-forward
-      "?" 'evil-command-window-search-backward)
+      ":" '(evil-command-window-ex :which-key "evil-command-window-ex")
+      "/" '(evil-command-window-search-forward :which-key "evil-command-window-search-forward")
+      "?" '(evil-command-window-search-backward :which-key "evil-command-window-search-backward"))
     (define-key evil-motion-state-map [down-mouse-1] nil)
     (evil-set-initial-state 'dashboard-mode 'emacs)
     (evil-set-initial-state 'elpaca-log-mode 'emacs)
@@ -517,7 +520,7 @@ Make =C-a= and =C-s= work like =C-a= =C-x= in vim.
   (use-feature simple
   	     :general
   	     (+general-global-toggle
-  	       "f" 'auto-fill-mode))
+  	       "f" '(auto-fill-mode :which-key "auto-fill-mode")))
 #+end_src
 
 * Auto revert
@@ -536,9 +539,9 @@ Make =C-a= and =C-s= work like =C-a= =C-x= in vim.
     :custom (bookmark-fontify nil)
     :general
     (+general-global-bookmark
-      "j" 'bookmark-jump
-      "s" 'bookmark-set
-      "r" 'bookmark-rename))
+      "j" '(bookmark-jump :which-key "bookmark-jump")
+      "s" '(bookmark-set :which-key "bookmark-set")
+      "r" '(bookmark-rename :which-key "bookmark-rename")))
 #+end_src
 
 * Calc
@@ -547,9 +550,9 @@ Emacs calculator
   (use-feature calc
   	     :general
   	     (+general-global-menu! "calc" "c"
-  	       "c" 'quick-calc
-  	       "C" 'calc
-  	       "f" 'full-calc))
+  	       "c" '(quick-calc :which-key "quick-calc")
+  	       "C" '(calc :which-key "calc")
+  	       "f" '(full-calc :which-key "full-calc")))
 #+end_src
 
 * Completion system
@@ -574,8 +577,8 @@ In-buffer completion
     (corfu-auto-prefix 2)
     (corfu-quit-no-match 'separator)
     (completion-at-point-functions
-  	(list (
-  	       cape-capf-debug #'cape-dict)))
+  	 (list (
+  	        cape-capf-debug #'cape-dict)))
     :init
     (global-corfu-mode)
     :config
@@ -682,10 +685,10 @@ not sure what this provides. Research needed
       :major-modes '(org-mode)
       :keymaps '(org-mode-map)
       "/" 'consult-org-heading)
-    (+general-global-buffer "i" 'consult-buffer)
-    (+general-global-project "a" 'consult-grep)
+    (+general-global-buffer "i" '(consult-buffer :which-key "consult-buffer"))
+    (+general-global-project "a" '(consult-grep :which-key "consult-grep"))
     (+general-global-file
-      "r" 'consult-recent-file)
+      "r" '(consult-recent-file :which-key "consult-recent-file"))
     )
 #+end_src
 
@@ -715,9 +718,9 @@ not sure what this provides. Research needed
   (use-feature dictionary
     :defer t
     :general
-    (dh-global-def "W" 'dictionary-lookup-definition)
-    (+general-global-application "D" 'dictionary-search)
-    (+general-global-text "d" 'dictionary-search)
+    (dh-global-def "W" '(dictionary-lookup-definition :which-key "dictionary-lookup-definition"))
+    (+general-global-application "D" '(dictionary-search :which-key "dictionary-search"))
+    (+general-global-text "d" '(dictionary-search :which-key "dictionary-search"))
     :custom
     (dictionary-create-buttons nil)
     (dictionary-use-single-buffer t))
@@ -734,7 +737,7 @@ not sure what this provides. Research needed
     (dired-omit-files "\\(?:\\.+[^z-a]*\\)")
     :hook (dired-mode-hook . dired-omit-mode)
     :general
-    (+general-global-application "d" 'dired))
+    (+general-global-application "d" '(dired :which-key "dired")))
 #+end_src
 
 * Doct
@@ -871,8 +874,8 @@ Save backup files into one directory
     :general
     (+general-global-toggle
       "F" '(:ignore t :which-key "fill-column-indicator")
-      "FF" 'display-fill-column-indicator-mode
-      "FG" 'global-display-fill-column-indicator-mode)
+      "FF" '(display-fill-column-indicator-mode :which-key "display-fill-column-indicator-mode")
+      "FG" '(global-display-fill-column-indicator-mode) :which-key "global-display-fill-column-indicator-mode)")
     )
 #+end_src
 
@@ -904,8 +907,8 @@ Save backup files into one directory
       :keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)
       "f" '(:ignore t :which-key "flymake")
       "ff" '((lambda () (interactive) (flymake-mode 'toggle)) :which-key "toggle flymake-mode")
-      "fn" 'flymake-goto-next-error
-      "fp" 'flymake-goto-prev-error)
+      "fn" '(flymake-goto-next-error :which-key "flymake-goto-next-error")
+      "fp" '(flymake-goto-prev-error :which-key "flymake-goto-prev-error"))
     :hook (flymake-mode . (lambda () (or (ignore-errors flymake-show-project-diagnostics)
                                          (flymake-show-buffer-diagnostics))))
     :config
@@ -933,13 +936,13 @@ Save backup files into one directory
     :commands (flyspell-mode flyspell-prog-mode)
     :general
     (+general-global-toggle
-      "ss" 'flyspell-mode
-      "sp" 'flyspell-prog-mode)
+      "ss" '(flyspell-mode :which-key "flyspell-mode")
+      "sp" '(flyspell-prog-mode :which-key "flyspell-prog-mode"))
     (+general-global-spelling
-      "n" 'flyspell-goto-next-error
-      "b" 'flyspell-buffer
-      "w" 'flyspell-word
-      "r" 'flyspell-region)
+      "n" '(flyspell-goto-next-error :which-key "flyspell-goto-next-error")
+      "b" '(flyspell-buffer :which-key "flyspell-buffer")
+      "w" '(flyspell-word :which-key "flyspell-word")
+      "r" '(flyspell-region :which-key "flyspell-region"))
     :hook ((org-mode mu4e-compose-mode git-commit-mode) . flyspell-mode))
 #+end_src
 
@@ -950,8 +953,8 @@ Save backup files into one directory
     :after (flyspell)
     :general
     (+general-global-spelling
-      "B" 'flyspell-correct-wrapper
-      "p" 'flyspell-correct-at-point))
+      "B" '(flyspell-correct-wrapper :which-key "flyspell-correct-wrapper")
+      "p" '(flyspell-correct-at-point :which-key "flyspell-correct-at-point")))
 #+end_src
 
 * Fontify face
@@ -1004,18 +1007,18 @@ org agenda와 calendar에서 공휴일을 표시한다.
     (magit-diff-refine-hunk 'all)
     :general
     (+general-global-git/version-control
-      "b" 'magit-branch
-      "B" 'magit-blame
-      "c" 'magit-clone
+      "b" '(magit-branch :which-key "magit-branch")
+      "B" '(magit-blame :which-key "magit-blame")
+      "c" '(magit-clone :which-key "magit-clone")
       "f" '(:ignore t :which-key "file")
-      "ff" 'magit-find-file
-      "fh" 'magit-log-buffer-file
-      "i" 'magit-init
-      "L" 'magit-list-repositories
-      "m" 'magit-dispatch
-      "S" 'magit-stage-files
-      "s" 'magit-status
-      "U" 'magit-unstage-files)
+      "ff" '(magit-find-file :which-key "magit-find-file")
+      "fh" '(magit-log-buffer-file :which-key "magit-log-buffer-file")
+      "i" '(magit-init :which-key "magit-init")
+      "L" '(magit-list-repositories :which-key "magit-list-repositories")
+      "m" '(magit-dispatch :which-key "magit-dispatch")
+      "S" '(magit-stage-files :which-key "magit-stage-files")
+      "s" '(magit-status :which-key "magit-status")
+      "U" '(magit-unstage-files :which-key "magit-unstage-files"))
     :config
     (transient-bind-q-to-quit)
     )
@@ -1169,28 +1172,29 @@ Org mode
       "ok" '(:ignore t :which-key "clock")
       "okg" '(org-clock-goto :which-key "clock-goto")
       "oki" '(org-clock-in-last :which-key "clock-in-last")
-      "okj" 'org-clock-jump-to-current-clock
-      "oko" 'org-clock-out
-      "okr" 'org-resolve-clocks
-      "ol" 'org-store-link
-      "om" 'org-tags-view
-      "os" 'org-search-view
-      "oT" 'org-todo-list
+      "okj" '(org-clock-jump-to-current-clock :which-key "org-clock-jump-to-current-clock")
+      "oko" '(org-clock-out :which-key "org-clock-out")
+      "okr" '(org-resolve-clocks :which-key "org-resolve-clocks")
+      "ol" '(org-store-link :which-key "org-store-link")
+      "om" '(org-tags-view :which-key "org-tags-view")
+      "os" '(org-search-view :which-key "org-search-view")
+      "oT" '(org-todo-list :which-key "org-todo-list")
       "ot" '(:ignore t :which-key "timer")
-      "ott" 'org-timer
-      "otS" 'org-timer-stop
-      "otC" 'org-timer-change-times-in-region
-      "otc" 'org-timer-set-timer
-      "ots" 'org-timer-start
-      "oti" 'org-timer-item
-      "otp" 'org-timer-pause-or-continue
-      "otr" 'org-timer-show-remaining-time)
+      "ott" '(org-timer :which-key "org-timer")
+      "otS" '(org-timer-stop :which-key "org-timer-stop")
+      "otC" '(org-timer-change-times-in-region :which-key "org-timer-change-times-in-region")
+      "otc" '(org-timer-set-timer :which-key "org-timer-set-timer")
+      "ots" '(org-timer-start :which-key "org-timer-start")
+      "oti" '(org-timer-item :which-key "org-timer-item")
+      "otp" '(org-timer-pause-or-continue :which-key "org-timer-pause-or-continue")
+      "otr" '(org-timer-show-remaining-time :which-key "org-timer-show-remaining-time")
+      )
     :config
     <<org-keybinds>>
     (dh-global-leader
       :keymaps '(org-src-mode-map lisp-mode-shared-map)
-      "'" 'org-edit-src-exit
-      "k" 'org-edit-src-abort
+      "'" '(org-edit-src-exit :which-key "org-edit-src-exit")
+      "k" '(org-edit-src-abort :which-key "org-edit-src-abort")
       "E" '((lambda () (interactive)
               (call-interactively #'other-window) (switch-to-buffer nil) (call-interactively #'other-window))
             :which-key "Open Other buffer from other window")
@@ -1204,138 +1208,136 @@ Org mode
 :END:
 #+begin_src emacs-lisp :lexical t
   (general-define-key :states '(normal) :keymaps 'org-mode-map
-                      (kbd "<tab>") 'org-cycle
+                      (kbd "<tab>") '(org-cycle :which-key "org-cycle")
                       (kbd "<backtab>") 'org-shifttab)
   (general-define-key :states '(normal insert) :keymaps 'org-mode-map
-                      (kbd "M-l") 'org-metaright
-                      (kbd "M-h") 'org-metaleft
-                      (kbd "M-k") 'org-metaup
-                      (kbd "M-j") 'org-metadown
-                      (kbd "M-L") 'org-shiftmetaright
-                      (kbd "M-H") 'org-shiftmetaleft
-                      (kbd "M-K") 'org-shiftmetaup
-                      (kbd "M-J") 'org-shiftmetadown)
+                      (kbd "M-l") '(org-metaright :which-key "org-metaright")
+                      (kbd "M-h") '(org-metaleft :which-key "org-metaleft")
+                      (kbd "M-k") '(org-metaup :which-key "org-metaup")
+                      (kbd "M-j") '(org-metadown :which-key "org-metadown")
+                      (kbd "M-L") '(org-shiftmetaright :which-key "org-shiftmetaright")
+                      (kbd "M-H") '(org-shiftmetaleft :which-key "org-shiftmetaleft")
+                      (kbd "M-K") '(org-shiftmetaup :which-key "org-shiftmetaup")
+                      (kbd "M-J") '(org-shiftmetadown :which-key "org-shiftmetadown"))
   (general-define-key :states '(motion) :keymaps 'org-mode-map
-                      (kbd "RET") 'org-open-at-point)
+                      (kbd "RET") '(org-open-at-point :which-key "org-open-at-point"))
   (dh-global-leader
     :keymaps '(org-mode-map)
-    "TAB" 'org-cycle
-    "." 'org-time-stamp
-    "!" 'org-timestamp-inactive
-    "<" 'org-date-from-calendar
-    ">" 'org-goto-calendar
+    "TAB" '(org-cycle :which-key "org-cycle")
+    "." '(org-time-stamp :which-key "org-time-stamp")
+    "!" '(org-timestamp-inactive :which-key "org-timestamp-inactive")
+    "<" '(org-date-from-calendar :which-key "org-date-from-calendar")
+    ">" '(org-goto-calendar :which-key "org-goto-calendar")
 
     "C" '(:ignore t :which-key "clock")
-    "Cc" 'org-clock-cancel
-    "Ci" 'org-clock-in
-    "Co" 'org-clock-out
-    "Cr" 'org-clock-report
-    "CR" 'org-resolve-clocks
+    "Cc" '(org-clock-cancel :which-key "org-clock-cancel")
+    "Ci" '(org-clock-in :which-key "org-clock-in")
+    "Co" '(org-clock-out :which-key "org-clock-out")
+    "Cr" '(org-clock-report :which-key "org-clock-report")
+    "CR" '(org-resolve-clocks :which-key "org-resolve-clocks")
 
     "d" '(:ignore t :which-key "dates")
-    "dd" 'org-deadline
+    "dd" '(org-deadline :which-key "org-deadline")
     "df" '((lambda () (interactive) (+org-fix-close-times))
            :which-key "org-fix-close-time")
-    "ds" 'org-schedule
-    "di" 'org-time-stamp-inactive
-    "dt" 'org-time-stamp
+    "ds" '(org-schedule :which-key "org-schedule")
+    "di" '(org-time-stamp-inactive :which-key "org-time-stamp-inactive")
+    "dt" '(org-time-stamp :which-key "org-time-stamp")
     
     "e" '(:ignore t :which-key "export")
-    "ee" 'org-export-dispatch
+    "ee" '(org-export-dispatch :which-key "org-export-dispatch")
 
     "h" '(:ignore t :which-key "heading")
-    "hf" 'org-forward-heading-same-level
-    "hb" 'org-backward-heading-same-level
+    "hf" '(org-forward-heading-same-level :which-key "org-forward-heading-same-level")
+    "hb" '(org-backward-heading-same-level :which-key "org-backward-heading-same-level")
     
     "i" '(:ignore t :which-key "insert")
-    "id" 'org-insert-drawer
-    "ie" 'org-set-effort
-    "if" 'org-footnote-new
-    "iH" 'org-insert-heading-after-current
-    "ih" 'org-insert-heading
-    "ii" 'org-insert-item
-    "il" 'org-insert-link
-    "in" 'org-add-note
-    "ip" 'org-set-property
-    "is" 'org-insert-structure-template
-    "it" 'org-set-tags-command
+    "id" '(org-insert-drawer :which-key "org-insert-drawer")
+    "ie" '(org-set-effort :which-key "org-set-effort")
+    "if" '(org-footnote-new :which-key "org-footnote-new")
+    "iH" '(org-insert-heading-after-current :which-key "org-insert-heading-after-current")
+    "ih" '(org-insert-heading :which-key "org-insert-heading")
+    "ii" '(org-insert-item :which-key "org-insert-item")
+    "il" '(org-insert-link :which-key "org-insert-link")
+    "in" '(org-add-note :which-key "org-add-note")
+    "ip" '(org-set-property :which-key "org-set-property")
+    "is" '(org-insert-structure-template :which-key "org-insert-structure-template")
+    "it" '(org-set-tags-command :which-key "org-set-tags-command")
 
     "n" '(:ignore t :which-key "narrow")
-    "nb" 'org-narrow-to-block
-    "ne" 'org-narrow-to-element
-    "ns" 'org-narrow-to-subtree
-    "nt" 'org-toggle-narrow-to-subtree
+    "nb" '(org-narrow-to-block :which-key "org-narrow-to-block")
+    "ne" '(org-narrow-to-element :which-key "org-narrow-to-element")
+    "ns" '(org-narrow-to-subtree :which-key "org-narrow-to-subtree")
+    "nt" '(org-toggle-narrow-to-subtree :which-key "org-toggle-narrow-to-subtree")
 
     "s" '(:ignore t :which-key "trees/subtrees")
-    "sA" 'org-archive-subtree
-    "sa" 'org-toggle-archive-tag
-    "sb" 'org-tree-to-indirect-buffer
-    "sc" 'org-cut-subtree
-    "sh" 'org-promote-subtree
-    "sj" 'org-move-subtree-down
-    "sk" 'org-move-subtree-up
-    "sl" 'org-demote-subtree
+    "sA" '(org-archive-subtree :which-key "org-archive-subtree")
+    "sa" '(org-toggle-archive-tag :which-key "org-toggle-archive-tag")
+    "sb" '(org-tree-to-indirect-buffer :which-key "org-tree-to-indirect-buffer")
+    "sc" '(org-cut-subtree :which-key "org-cut-subtree")
+    "sh" '(org-promote-subtree :which-key "org-promote-subtree")
+    "sj" '(org-move-subtree-down :which-key "org-move-subtree-down")
+    "sk" '(org-move-subtree-up :which-key "org-move-subtree-up")
+    "sl" '(org-demote-subtree :which-key "org-demote-subtree")
     "sp" '(:ignore t :which-key "priority")
-    "spu" 'org-priority-up
-    "spd" 'org-priority-down
-    "sps" 'org-priority-show
-    "sm" 'org-match-sparse-tree
-    "sn" 'org-toggle-narrow-to-subtree
-    "sr" 'org-refile
-    "sS" 'org-sort
-    "ss" '+org-sparse-tree
+    "spu" '(org-priority-up :which-key "org-priority-up")
+    "spd" '(org-priority-down :which-key "org-priority-down")
+    "sps" '(org-priority-show :which-key "org-priority-show")
+    "sm" '(org-match-sparse-tree :which-key "org-match-sparse-tree")
+    "sn" '(org-toggle-narrow-to-subtree :which-key "org-toggle-narrow-to-subtree")
+    "sr" '(org-refile :which-key "org-refile")
+    "sS" '(org-sort :which-key "org-sort")
+    "ss" '(+org-sparse-tree :which-key "+org-sparse-tree")
 
     "t" '(:ignore t :which-key "tables")
-    "ta"  'org-table-align
-    "tb"  'org-table-blank-field
-    "tc"  'org-table-convert
+    "ta"  '(org-table-align :which-key "org-table-align")
+    "tb"  '(org-table-blank-field :which-key "org-table-blank-field")
+    "tc"  '(org-table-convert :which-key "org-table-convert")
 
     "td"  '(:ignore t :which-key "delete")
-    "tdc" 'org-table-delete-column
-    "tdr" 'org-table-kill-row
-    "tE"  'org-table-export
-    "te"  'org-table-eval-formula
-    "tH"  'org-table-move-column-left
-    "th"  'org-table-previous-field
-    "tI"  'org-table-import
+    "tdc" '(org-table-delete-column :which-key "org-table-delete-column")
+    "tdr" '(org-table-kill-row :which-key "org-table-kill-row")
+    "tE"  '(org-table-export :which-key "org-table-export")
+    "te"  '(org-table-eval-formula :which-key "org-table-eval-formula")
+    "tH"  '(org-table-move-column-left :which-key "org-table-move-column-left")
+    "th"  '(org-table-previous-field :which-key "org-table-previous-field")
+    "tI"  '(org-table-import :which-key "org-table-import")
 
     "ti"  '(:ignore t :which-key "insert")
-    "tic" 'org-table-insert-column
-    "tih" 'org-table-insert-hline
-    "tiH" 'org-table-hline-and-move
-    "tir" 'org-table-insert-row
-    "tJ"  'org-table-move-row-down
-    "tj"  'org-table-next-row
-    "tK"  'org-table-move-row-up
-    "tL"  'org-table-move-column-right
-    "tl"  'org-table-next-field
-    "tN"  'org-table-create-with-table.el
-    "tn"  'org-table-create
-    "tp"  'org-plot/gnuplot
-    "tr"  'org-table-recalculate
-    "ts"  'org-table-sort-lines
+    "tic" '(org-table-insert-column :which-key "org-table-insert-column")
+    "tih" '(org-table-insert-hline :which-key "org-table-insert-hline")
+    "tiH" '(org-table-hline-and-move :which-key "org-table-hline-and-move")
+    "tir" '(org-table-insert-row :which-key "org-table-insert-row")
+    "tJ"  '(org-table-move-row-down :which-key "org-table-move-row-down")
+    "tj"  '(org-table-next-row :which-key "org-table-next-row")
+    "tK"  '(org-table-move-row-up :which-key "org-table-move-row-up")
+    "tL"  '(org-table-move-column-right :which-key "org-table-move-column-right")
+    "tl"  '(org-table-next-field :which-key "org-table-next-field")
+    "tN"  '(org-table-create-with-table.el :which-key "org-table-create-with-table.el")
+    "tn"  '(org-table-create :which-key "org-table-create")
+    "tp"  '(org-plot/gnuplot :which-key "org-plot/gnuplot")
+    "tr"  '(org-table-recalculate :which-key "org-table-recalculate")
+    "ts"  '(org-table-sort-lines :which-key "org-table-sort-lines")
 
     "tt"  '(:ignore t :which-key "toggle")
-    "ttf" 'org-table-toggle-formula-debugger
-    "tto" 'org-table-toggle-coordinate-overlays
-    "tw"  'org-table-wrap-region
+    "ttf" '(org-table-toggle-formula-debugger :which-key "org-table-toggle-formula-debugger")
+    "tto" '(org-table-toggle-coordinate-overlays :which-key "org-table-toggle-coordinate-overlays")
+    "tw"  '(org-table-wrap-region :which-key "org-table-wrap-region")
     
     "T" '(:ignore t :which-key "toggle")
-    "Tc" 'org-toggle-checkbox
-    "Te" 'org-toggle-pretty-entities
-    "TE" '+org-toggle-hide-emphasis-markers
-    "Th" 'org-toggle-heading
-    "Ti" 'org-toggle-item
-    "Tl" 'org-toggle-link-display
-    "TT" 'org-todo
-    "Tt" 'org-show-todo-tree
-    "Tx" 'org-latex-preview
-    "RET" 'org-ctrl-c-ret
-    "#" 'org-update-statistics-cookies
+    "Tc" '(org-toggle-checkbox :which-key "org-toggle-checkbox")
+    "Te" '(org-toggle-pretty-entities :which-key "org-toggle-pretty-entities")
+    "TE" '(+org-toggle-hide-emphasis-markers :which-key "+org-toggle-hide-emphasis-markers")
+    "Th" '(org-toggle-heading :which-key "org-toggle-heading")
+    "Ti" '(org-toggle-item :which-key "org-toggle-item")
+    "Tl" '(org-toggle-link-display :which-key "org-toggle-link-display")
+    "TT" '(org-todo :which-key "org-todo")
+    "Tt" '(org-show-todo-tree :which-key "org-show-todo-tree")
+    "Tx" '(org-latex-preview :which-key "org-latex-preview")
+    "RET" '(org-ctrl-c-ret :which-key "org-ctrl-c-ret")
+    "#" '(org-update-statistics-cookies :which-key "org-update-statistics-cookies")
     "'" '(org-edit-special
-  	      :which-key "edit code block")
-    "b" '(:ignore t :which-key "Babel")
-    "bt" 'org-babel-tangle)
+  	      :which-key "edit code block"))
   (defun +org-sparse-tree (&optional arg type)
     (interactive)
     (funcall #'org-sparse-tree arg type)
@@ -1465,11 +1467,11 @@ Add a custom view for a simplified work agenda.
     :general
     (dh-global-leader :keymaps 'org-mode-map
       "b" '(:ignore t :which-key "babel")
-      "bt" 'org-babel-tangle
-      "bT" 'org-babel-tangle-file
+      "bt" '(org-babel-tangle :which-key "org-babel-tangle")
+      "bT" '(org-babel-tangle-file :which-key "org-babel-tangle-file")
       "be" '(:ignore t :which-key "execute")
-      "beb" 'org-babel-execute-buffer
-      "bes" 'org-babel-execute-subtree)
+      "beb" '(org-babel-execute-buffer :which-key "org-babel-execute-buffer")
+      "bes" '(org-babel-execute-subtree :which-key "org-babel-execute-subtree"))
     :config
     <<org-babel-config>>)
 #+end_src
@@ -1683,23 +1685,23 @@ Org mode에서 Heading과 plain list를 예쁘게 만든다.
     :after (general)
     :general
     (+general-global-project
-      "!" 'projectile-run-shell-command-in-root
-      "%" 'projectile-replace-regexp
-      "&" 'projectile-run-async-shell-command-in-root
-      "A" 'projectile-toggle-between-implementation-and-test
-      "bn" 'projectile-next-project-buffer
-      "bp" 'projectile-previous-project-buffer
-      "c" 'projectile-compile-project
-      "D" 'projectile-dired
-      "e" 'projectile-edit-dir-locals
-      "g" 'projectile-find-tag
-      "G" 'projectile-regenerate-tags
-      "I" 'projectile-invalidate-cache
-      "k" 'projectile-kill-buffers
-      "R" 'projectile-replace
-      "s" 'projectile-save-project-buffers
-      "T" 'projectile-test-project
-      "v" 'projectile-vc)
+      "!" '(projectile-run-shell-command-in-root :which-key "projectile-run-shell-command-in-root")
+      "%" '(projectile-replace-regexp :which-key "projectile-replace-regexp")
+      "&" '(projectile-run-async-shell-command-in-root :which-key "projectile-run-async-shell-command-in-root")
+      "A" '(projectile-toggle-between-implementation-and-test :which-key "projectile-toggle-between-implementation-and-test")
+      "bn" '(projectile-next-project-buffer :which-key "projectile-next-project-buffer")
+      "bp" '(projectile-previous-project-buffer :which-key "projectile-previous-project-buffer")
+      "c" '(projectile-compile-project :which-key "projectile-compile-project")
+      "D" '(projectile-dired :which-key "projectile-dired")
+      "e" '(projectile-edit-dir-locals :which-key "projectile-edit-dir-locals")
+      "g" '(projectile-find-tag :which-key "projectile-find-tag")
+      "G" '(projectile-regenerate-tags :which-key "projectile-regenerate-tags")
+      "I" '(projectile-invalidate-cache :which-key "projectile-invalidate-cache")
+      "k" '(projectile-kill-buffers :which-key "projectile-kill-buffers")
+      "R" '(projectile-replace :which-key "projectile-replace")
+      "s" '(projectile-save-project-buffers :which-key "projectile-save-project-buffers")
+      "T" '(projectile-test-project :which-key "projectile-test-project")
+      "v" '(projectile-vc :which-key "projectile-vc"))
     :config
     (add-to-list 'projectile-globally-ignored-directories "*node_modules")
     (projectile-mode))
@@ -1753,23 +1755,23 @@ re-builder는 reg-exp의 미리보기를 보여준다.
     (tab-bar-show nil "hide tab bar. use commands to access tabs.")
     :general
     (+general-global-tab
-      "b" 'tab-bar-history-back
-      "d" 'tab-bar-close-tab
-      "f" 'tab-bar-history-forward
-      "N" 'tab-bar-new-tab
-      "n" 'tab-bar-switch-to-next-tab
-      "p" 'tab-bar-switch-to-prev-tab
+      "b" '(tab-bar-history-back :which-key "tab-bar-history-back")
+      "d" '(tab-bar-close-tab :which-key "tab-bar-close-tab")
+      "f" '(tab-bar-history-forward :which-key "tab-bar-history-forward")
+      "N" '(tab-bar-new-tab :which-key "tab-bar-new-tab")
+      "n" '(tab-bar-switch-to-next-tab :which-key "tab-bar-switch-to-next-tab")
+      "p" '(tab-bar-switch-to-prev-tab :which-key "tab-bar-switch-to-prev-tab")
       "L" '((lambda (arg) (interactive "p") (tab-bar-move-tab arg))
             :which-key "tab-bar-move-tab-right")
-      "l" 'tab-bar-switch-to-next-tab
+      "l" '(tab-bar-switch-to-next-tab :which-key "tab-bar-switch-to-next-tab")
       "H" '((lambda (arg) (interactive "p") (tab-bar-move-tab (- arg)))
             :which-key "tab-bar-move-tab-left")
-      "h" 'tab-bar-switch-to-prev-tab
-      "r" 'tab-bar-rename-tab
-      "t" 'tab-bar-switch-to-tab
-      "u" 'tab-bar-undo-close-tab
-      "O" 'tab-bar-close-other-tabs
-      "w" 'tab-bar-move-tab-to-frame))
+      "h" '(tab-bar-switch-to-prev-tab :which-key "tab-bar-switch-to-prev-tab")
+      "r" '(tab-bar-rename-tab :which-key "tab-bar-rename-tab")
+      "t" '(tab-bar-switch-to-tab :which-key "tab-bar-switch-to-tab")
+      "u" '(tab-bar-undo-close-tab :which-key "tab-bar-undo-close-tab")
+      "O" '(tab-bar-close-other-tabs :which-key "tab-bar-close-other-tabs")
+      "w" '(tab-bar-move-tab-to-frame :which-key "tab-bar-move-tab-to-frame")))
 #+end_src
 ** Tab line
 #+begin_src emacs-lisp :lexical t
@@ -1825,8 +1827,8 @@ visit real file when editing a symlink without prompting
     :general
     (+general-global-application
       "t" '(:ignore t :which-key "terminal")
-      "tt" 'vterm-other-window
-      "t." 'vterm)
+      "tt" '(vterm-other-window :which-key "vterm-other-window")
+      "t." '(vterm :which-key "vterm"))
     :config
     (evil-set-initial-state 'vterm-mode 'emacs))
 #+end_src

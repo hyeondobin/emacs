@@ -957,11 +957,11 @@ Save backup files into one directory
       "p" '(flyspell-correct-at-point :which-key "flyspell-correct-at-point")))
 #+end_src
 
-* Fontify face
+* Fontify face한글 
 #+begin_src emacs-lisp :lexical t
   (use-package fontify-face
     :ensure t
-    :commands (fontisy-face-mode))
+    :commands (fontify-face-mode))
 #+end_src
 
 * Help
@@ -1122,10 +1122,10 @@ JetBrains Mono Nerd Font
      :regiistry "unicode-bmp"))
   (set-fontset-font "fontset-default"
   		  '(#xac00 . #xd7a3)
-  		  dobin/kor-font)
+  		  dh/kor-font)
   (set-fontset-font "fontset-default"
   		  '(#x1100 . #xffdc)
-  		  dobin/kor-font)
+  		  dh/kor-font)
 
   (add-to-list 'face-font-rescale-alist '(".*D2Coding.*" . 1.23))
   (setq-default line-spacing 5) ; 
@@ -1367,20 +1367,39 @@ Org mode
 #+end_src
 
 ** configs
+:PROPERTIES:
+:header-args: :noweb-ref org-config
+:END:
+#+begin_src emacs-lisp :lexical t
+(setq org-log-done 'time)
+(setq org-return-follows-link t)
+  (setq org-hide-emphasis-markers t)
+(add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
+(add-hook 'org-mode-hook 'org-indent-mode)
+  (add-hook 'org-mode-hook 'visual-line-mode)
+
+#+end_src
+
+*** face 
+#+begin_src emacs-lisp :lexical t
+(set-face-attribute 'org-level-1 nil
+                    :family "D2CodingLigature Nerd Font"
+                    :weight 'bold
+                    :height 2.0)
+(set-face-attribute 'org-level-2 nil
+                    :family "D2CodingLigature Nerd Font"
+                    :weight 'bold
+                    :height 1.5)
+(set-face-attribute 'org-todo nil
+                    :family "D2CodingLigature Nerd Font"
+                    :weight 'bold
+                    :height 1.2)
+#+end_src
+
+** additional packages 한글
 #+begin_src emacs-lisp :lexical t 
   (use-package org-super-agenda :ensure t)
   (use-package comment-tags :ensure t)
-
-  (setq org-agenda-files '("~/org")) ; tell agenda where files are
-
-  (setq org-log-done 'time) ; TODO
-  (setq org-return-follows-link t) ; RET
-
-  (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
-  (add-hook 'org-mode-hook 'org-indent-mode)
-
-  (setq org-hide-emphasis-markers t)
-  (add-hook 'org-mode-hook 'visual-line-mode)
 #+end_src
 
 ** ToDo States
@@ -1407,6 +1426,7 @@ Also, set colors for the todos, too.
   (use-feature org-agenda
     :after (general evil)
     :config
+    (setq org-agenda-files '("~/org")) ; tell agenda where files are
     (defun +org-agenda-archives (&optional arg)
       "Toggle `org-agenda-archives-mode' so that it includes archive files by default.
     Inverts normal logic of ARG."
@@ -1432,9 +1452,55 @@ Also, set colors for the todos, too.
 :header-args: :noweb-ref org-agenda-keybindings
 :END:
 #+begin_src emacs-lisp :lexical t
-
+(+general-global-application
+  "o#" '(org-agenda-list-stuck-projects :which-key "org-agenda-list-stuck-projects")
+  "o/" '(org-agenda-in-agenda-files :which-key "org-agenda-in-agenda-flies")
+  "oa" '((lambda () (interactive) (org-agenda nil "a"))
+         :which-key "agenda")
+  "oe" '(org-store-agenda-views :which-key "store agenda views")
+  "oo" '(org-agenda :which-key "agenda")
+  )
 #+end_src
 
+#+begin_src emacs-lisp :lexical t
+(with-eval-after-load 'org-agenda
+  (evil-make-intercept-map org-agenda-mode-map)
+  (general-define-key
+   :keymaps 'org-agenda-mode-map
+   "A" '+org-agenda-archives
+   "C" 'org-agenda-clockreport-mode
+   "D" 'org-agenda-goto-date
+   "H" 'org-habit-toggle-habits
+   "J" 'org-agenda-next-item
+   "K" 'org-agenda-previous-item
+   "R" 'org-agenda-refile
+   "S" 'org-agenda-schedule
+   "RET" 'org-agenda-recenter
+   "a" '+org-capture-again
+   "c" 'org-agenda-capture
+   "j" 'org-agenda-next-line
+   "k" 'org-agenda-previous-line
+   "m" 'org-agenda-month-view
+   "t" 'org-agenda-set-tags
+   "T" 'org-agenda-todo
+   "u" 'org-agenda-undo))
+#+end_src
+
+#+begin_src emacs-lisp :lexical t
+:config
+
+(evil-set-initial-state 'org-agenda-mode 'normal)
+(defun +org-agenda-redo-all ()
+  "Rebuild all agenda buffers"
+  (interactive)
+  (dolist (buffer (buffer-list))
+    (with-current-buffer buffer
+      (when (derived-mode-p 'org-agenda-mode)
+        (org-agenda-maybe-redo)))))
+(add-hook 'org-mode-hook
+          (lambda ()
+            (add-hook 'after-save-hook '+org-agenda-redo-all nil t)))
+#+end_src
 *** customs
 :PROPERTIES:
 :header-args: :noweb-ref org-agenda-custom
@@ -1442,7 +1508,7 @@ Also, set colors for the todos, too.
 Add a custom view for a simplified work agenda.
 #+begin_src emacs-lisp :lexical t
   (org-agenda-window-setup 'current-window)
-  (setq org-agenda-custom-commands
+  (org-agenda-custom-commands
         '(("w" "Work Schedule" agenda "+work"
            ((org-agenda-files '("~/org/todo.org"))
             (org-agenda-window-setup 'current-window)
@@ -1453,7 +1519,19 @@ Add a custom view for a simplified work agenda.
             (org-agenda-time-leading-zero t)
             (org-agenda-use-time-grid nil)
             (org-agenda-archives-mode t)
-            ))))
+            ))
+          ("n" "Agenda and all TODOs" (agenda "") (alltodo ""))))
+
+(org-agenda-skip-deadline-prewarning-if-scheduled nil "Show approaching deadlines even when scheduled.")
+(org-agenda-span 'day)
+(org-agenda-inhibit-startup t)
+(org-agenda-sorting-strategy
+ '((agenda time-up priority-down category-keep)
+   (todo priority-down category-keel)
+   (tags priority-down category-keep)
+   (search category-keep)))
+
+(org-agenda-tags-column -80)
 #+end_src
 
 ** Org babel
